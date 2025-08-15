@@ -24,42 +24,46 @@ Features, APIs, and modules are being gradually developed and tested.
 ---
 
 ## 📂 Planned Project Structure
+## 📂 Planned Project Structure
+
+```plaintext
 ecommerce/
 │
 ├── cmd/
-│ └── api/
-│ └── main.go # App entry point: will initialize services, DB, handlers
+│   └── api/
+│       └── main.go             # App entry point: will initialize services, DB, handlers
 │
 ├── internal/
-│ ├── config/
-│ │ └── db.go # Database connection setup
-│ │
-│ ├── domain/
-│ │ ├── product.go # Product entity and validation rules
-│ │ └── order.go # Order entity and business logic
-│ │
-│ ├── port/
-│ │ └── repository.go # Repository interfaces
-│ │
-│ ├── usecase/
-│ │ ├── product_service.go # Product-related use cases
-│ │ └── order_service.go # Order-related use cases
-│ │
-│ ├── adapter/
-│ │ ├── http/
-│ │ │ ├── router.go # Route registration
-│ │ │ ├── handler/
-│ │ │ │ ├── product_handler.go
-│ │ │ │ └── order_handler.go
-│ │ │ └── middleware/ # Logging, auth, CORS
-│ │ │
-│ │ └── repo/
-│ │ └── postgres/
-│ │ ├── product_repo.go
-│ │ └── order_repo.go
+│   ├── config/
+│   │   └── db.go               # Database connection setup
+│   │
+│   ├── domain/
+│   │   ├── product.go          # Product entity and validation rules
+│   │   └── order.go            # Order entity and business logic
+│   │
+│   ├── port/
+│   │   └── repository.go       # Repository interfaces
+│   │
+│   ├── usecase/
+│   │   ├── product_service.go  # Product-related use cases
+│   │   └── order_service.go    # Order-related use cases
+│   │
+│   ├── adapter/
+│   │   ├── http/
+│   │   │   ├── router.go       # Route registration
+│   │   │   ├── handler/
+│   │   │   │   ├── product_handler.go
+│   │   │   │   └── order_handler.go
+│   │   │   └── middleware/     # Logging, auth, CORS
+│   │   │
+│   │   └── repo/
+│   │       └── postgres/
+│   │           ├── product_repo.go
+│   │           └── order_repo.go
 │
 ├── go.mod
 └── README.md
+```
 ---
 
 ## 🏗️ Clean Architecture Vision
