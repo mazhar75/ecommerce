@@ -24,7 +24,6 @@ Features, APIs, and modules are being gradually developed and tested.
 ---
 
 ## 📂 Planned Project Structure
-## 📂 Planned Project Structure
 
 ```plaintext
 ecommerce/
