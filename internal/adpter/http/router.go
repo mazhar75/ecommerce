@@ -8,5 +8,5 @@ import (
 func RegisterRoutes(mux *http.ServeMux, productHandler *handler.ProductHandler) {
 	// GET /products route
 	mux.HandleFunc("/products", productHandler.GetProducts)
-	mux.HandleFunc("/products", productHandler.GetProductById)
+	mux.HandleFunc("/product", productHandler.GetProductById)
 }
