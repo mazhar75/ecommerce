@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github/ecommerce/internal/usecase"
 	"net/http"
+	"strconv"
 )
 
 type ProductHandler struct {
@@ -22,7 +23,7 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != "GET" {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	products, err := h.Service.GetAllProducts()
@@ -31,4 +32,30 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(products)
+}
+func (h *ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != "GET" {
+		if r.Method != "GET" {
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
+	}
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+	}
+
+	product, err := h.Service.GetByID(id)
+	if err != nil {
+		http.Error(w, "No id found", http.StatusNotFound)
+	}
+	json.NewEncoder(w).Encode(product)
+
 }

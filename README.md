@@ -1,3 +1,4 @@
+
 # 🛒 Ecommerce Platform (In Development)
 
 A fully-featured e-commerce backend currently under active development.  
@@ -26,6 +27,56 @@ Features, APIs, and modules are being gradually developed and tested.
 ## 📂 Planned Project Structure
 
 ```plaintext
+
+          ┌─────────────────────────┐
+          │        main.go          │
+          │                         │
+          │  - Creates Repo instanc │
+          │  - Injects Repo into    │
+          │    Usecase(Service)     │
+          │  - Injects Service into │
+          │    HTTP Handler         │
+          └───────────┬─────────────┘
+                      │
+                      ▼
+          ┌───────────────────────────┐
+          │     Handler / Adapter     │
+          │  (HTTP layer)             │
+          │                           │
+          │ - Receives HTTP requests  │
+          │ - Calls Usecase methods   │
+          └───────────┬─────────────  ┘
+                      │
+                      ▼
+          ┌───────────────────────────┐
+          │      Usecase / Service    │
+          │                           │
+          │ - Contains business logic │
+          │ - Depends on Port         │
+          │   interface (ProductRepo) │
+          └───────────┬─────────────┘
+                      │
+                      ▼
+          ┌───────────────────────────┐
+          │       Port / Interface    │
+          │                           │
+          │ - Defines contracts:      │
+          │   ProductRepository       │
+          │ - GetAll(), GetById()     │
+          └───────────┬─────────────┘
+                      │
+                      ▼
+          ┌───────────────────────────┐
+          │     Infrastructure / Repo │
+          │  (Concrete Implementation)│
+          │                           │
+          │ - MemoryRepo / DBRepo     │
+          │ - Implements Port         │
+          │   interface               │
+          └───────────────────────────┘
+
+
+
 ecommerce/
 │
 ├── cmd/

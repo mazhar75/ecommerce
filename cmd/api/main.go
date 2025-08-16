@@ -29,7 +29,7 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Server starting...")
+	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()
 	httpadapter.RegisterRoutes(mux, productHandler)
 	err := http.ListenAndServe(":9090", mux)

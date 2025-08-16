@@ -1,11 +1,12 @@
 package http
 
 import (
-    "net/http"
-    "github/ecommerce/internal/adapter/http/handler"
+	"github/ecommerce/internal/adpter/http/handler"
+	"net/http"
 )
 
 func RegisterRoutes(mux *http.ServeMux, productHandler *handler.ProductHandler) {
-    // GET /products route
-    mux.HandleFunc("/products", productHandler.GetProducts)
+	// GET /products route
+	mux.HandleFunc("/products", productHandler.GetProducts)
+	mux.HandleFunc("/products", productHandler.GetProductById)
 }
