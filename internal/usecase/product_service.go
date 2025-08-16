@@ -22,3 +22,6 @@ func (s *ProductService) GetAllProducts() ([]domain.Product, error) {
 func (s *ProductService) GetByID(id int) (domain.Product, error) {
 	return s.Repo.GetById(id)
 }
+func (s *ProductService) InsertProduct(p domain.Product) error {
+	return s.Repo.InsertProduct(p)
+}
