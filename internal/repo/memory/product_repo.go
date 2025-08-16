@@ -25,3 +25,8 @@ func (r *ProductRepo) GetById(id int) (domain.Product, error) {
 func (r *ProductRepo) GetAll() ([]domain.Product, error) {
 	return r.ProductList, nil
 }
+
+func (r *ProductRepo) InsertProduct(p domain.Product) error {
+	r.ProductList = append(r.ProductList, p)
+	return nil
+}
