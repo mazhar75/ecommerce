@@ -1,23 +1,24 @@
 package usecase
 
 import (
-    "github/ecommerce/internal/port"
-    "github/ecommerce/internal/domain/product"
+	"github/ecommerce/internal/domain"
+	"github/ecommerce/internal/port"
 )
 
 type ProductService struct {
-    Repo port.ProductRepository
+	Repo port.ProductRepository
 }
 
 // Constructor
 func NewProductService(repo port.ProductRepository) *ProductService {
-    return &ProductService{Repo: repo}
+	return &ProductService{Repo: repo}
 }
 
 // GetAllProducts retrieves all products via the repository
-func (s *ProductService) GetAllProducts() ([]product.Product, error) {
-    return s.Repo.GetAll()
+func (s *ProductService) GetAllProducts() ([]domain.Product, error) {
+	return s.Repo.GetAll()
 }
-func (s *ProductService)GetByID(id int)(product.Product,error){
-    return s.Repo.GetById()     
+
+func (s *ProductService) GetByID(id int) (domain.Product, error) {
+	return s.Repo.GetById(id)
 }

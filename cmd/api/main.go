@@ -8,9 +8,8 @@ import (
 	"github/ecommerce/internal/domain"
 	"github/ecommerce/internal/repo/memory"
 	"github/ecommerce/internal/usecase"
-
+	"log"
 	"net/http"
-	// alias
 )
 
 var (
@@ -30,10 +29,13 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Server starting...")
+	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()
 	httpadapter.RegisterRoutes(mux, productHandler)
-	http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":9090", mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 /*
