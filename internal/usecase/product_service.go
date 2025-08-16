@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github/ecommerce/internal/domain"
+	"github/ecommerce/internal/domain/product"
 	"github/ecommerce/internal/port"
 )
 
@@ -15,10 +15,13 @@ func NewProductService(repo port.ProductRepository) *ProductService {
 }
 
 // GetAllProducts retrieves all products via the repository
-func (s *ProductService) GetAllProducts() ([]domain.Product, error) {
+func (s *ProductService) GetAllProducts() ([]product.Product, error) {
 	return s.Repo.GetAll()
 }
 
-func (s *ProductService) GetByID(id int) (domain.Product, error) {
+func (s *ProductService) GetByID(id int) (product.Product, error) {
 	return s.Repo.GetById(id)
+}
+func (s *ProductService) InsertProduct(p product.Product) error {
+	return s.Repo.InsertProduct(p)
 }
