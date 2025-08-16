@@ -127,10 +127,11 @@ ecommerce/
 
 ## 📅 Development Roadmap
 
-- [ ] Set up basic project structure with Go modules  
-- [ ] Implement PostgreSQL connection and repository interfaces  
-- [ ] Add product & order domain models  
-- [ ] Create HTTP handlers and routing  
+- [✔] Set up basic project structure with Go modules
+- [✔] Add product domain models   
+- [✔] repository interfaces  
+- [ ] Add order domain models  
+- [✔] Create HTTP handlers and routing  
 - [ ] Implement authentication middleware  
 - [ ] Write unit tests and integration tests  
 - [ ] Add CI/CD pipelines  
