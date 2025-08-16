@@ -38,10 +38,8 @@ func (h *ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != "GET" {
-		if r.Method != "GET" {
-			http.Error(w, "", http.StatusInternalServerError)
-			return
-		}
+		http.Error(w, "", http.StatusBadRequest)
+		return
 	}
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
@@ -60,5 +58,16 @@ func (h *ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	json.NewEncoder(w).Encode(product)
+
+}
+func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-control-Allow-Method", "POST")
+
+	if r.Method != "POST" {
+		http.Error(w, "Only post is allowed", http.StatusBadRequest)
+	}
 
 }
