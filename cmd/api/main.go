@@ -19,9 +19,9 @@ var (
 func init() {
 	products := memory.ProductRepo{
 		ProductList: []product.Product{
-			{Id: 1, Name: "Mango", Type: "Fruits", Price: 70, ImgUrl: ""},
-			{Id: 2, Name: "Mouse", Type: "Electronics", Price: 100, ImgUrl: ""},
-			{Id: 3, Name: "Sharee", Type: "Shopping", Price: 999, ImgUrl: ""},
+			{ProductId: 1, Name: "Mango", Description: "Good quality", Type: "Fruits", Price: 70, ImgUrl: ""},
+			{ProductId: 2, Name: "Mouse", Description: "Good quality", Type: "Electronics", Price: 100, ImgUrl: ""},
+			{ProductId: 3, Name: "Sharee", Description: "Good quality", Type: "Shopping", Price: 999, ImgUrl: ""},
 		},
 	}
 	service := usecase.NewProductService(&products)
