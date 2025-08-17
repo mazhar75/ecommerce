@@ -1,9 +1,14 @@
 package product
 
+type Category struct {
+	CategoryId int    `json:"category_id"`
+	Name       string `json:"name"`
+}
 type Product struct {
 	Id          int     `json:"id"`
+	CategoryId  int     `json:"category_id"`
 	Name        string  `json:"name"`
-	Description string  `json: "description"`
+	Description string  `json:"description"`
 	Type        string  `json:"type"`
 	Price       float64 `json:"price"`
 	ImgUrl      string  `json:"img_url"`
