@@ -1,0 +1,25 @@
+name: Go Dependency Submission – e-commerce Module
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  submit-ecommerce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.18.0"
+
+      - name: Submit dependencies for e-commerce
+        uses: actions/go-dependency-submission@v2
+        with:
+          go-mod-path: ecommerce/go.mod
+          go-build-target: ecommerce/cmd/api/main.go
