@@ -28,52 +28,73 @@ Features, APIs, and modules are being gradually developed and tested.
 
 ```plaintext
 
-          ┌─────────────────────────┐
+          ┌───────────────────────┐
           │        main.go          │
+          │ (cmd/api/main.go)       │
           │                         │
-          │  - Creates Repo instanc │
-          │  - Injects Repo into    │
-          │    Usecase(Service)     │
-          │  - Injects Service into │
-          │    HTTP Handler         │
+          │ - Loads config/env      │
+          │ - Initializes DB Conn   │
+          │ - Creates Repo (DB impl)│
+          │ - Injects Repo into     │
+          │   Usecase(Service)      │
+          │ - Injects Service into  │
+          │   HTTP Handler          │
+          │ - Starts HTTP Router    │
           └───────────┬─────────────┘
+                      │
+                      ▼
+          ┌───────────────────────────┐
+          │  Frameworks / HTTP Router │
+          │ (internal/frameworks/http)│
+          │                           │
+          │ - Registers routes        │
+          │ - Attaches middleware     │
+          │ - Delegates to Handlers   │
+          └───────────┬───────────────┘
                       │
                       ▼
           ┌───────────────────────────┐
           │     Handler / Adapter     │
-          │  (HTTP layer)             │
+          │ (internal/adapter/http)   │
           │                           │
           │ - Receives HTTP requests  │
+          │ - Maps Req → Usecase DTO  │
           │ - Calls Usecase methods   │
-          └───────────┬─────────────  ┘
+          │ - Returns response        │
+          └───────────┬───────────────┘
                       │
                       ▼
           ┌───────────────────────────┐
           │      Usecase / Service    │
+          │ (internal/usecase)        │
           │                           │
-          │ - Contains business logic │
+          │ - Business logic rules    │
           │ - Depends on Port         │
-          │   interface (ProductRepo) │
-          └───────────┬─────────────┘
+          │   (ProductRepository)     │
+          └───────────┬───────────────┘
                       │
                       ▼
           ┌───────────────────────────┐
           │       Port / Interface    │
+          │ (internal/port)           │
           │                           │
-          │ - Defines contracts:      │
+          │ - Defines contract:       │
           │   ProductRepository       │
-          │ - GetAll(), GetById()     │
-          └───────────┬─────────────┘
+          │ - e.g. GetAll(), GetByID()│
+          └───────────┬───────────────┘
                       │
                       ▼
           ┌───────────────────────────┐
-          │     Infrastructure / Repo │
-          │  (Concrete Implementation)│
+          │  Adapter + Framework Repo │
+          │ (adapter/repo +           │
+          │  frameworks/db/postgres)  │
           │                           │
-          │ - MemoryRepo / DBRepo     │
+          │ - Mapper (domain <-> row) │
+          │ - Concrete DBRepo impl    │
+          │ - Uses DB driver/sql/gorm │
           │ - Implements Port         │
-          │   interface               │
           └───────────────────────────┘
+
 
 
 
@@ -81,38 +102,48 @@ ecommerce/
 │
 ├── cmd/
 │   └── api/
-│       └── main.go             # App entry point: will initialize services, DB, handlers
+│       └── main.go               # Entry point: init config, DB, repos, usecases, router
 │
 ├── internal/
 │   ├── config/
-│   │   └── db.go               # Database connection setup
+│   │   ├── app.go                # App-level config (env, port, secrets)
+│   │   └── db.go                 # DB connection setup (driver, pool)
 │   │
 │   ├── domain/
-│   │   ├── product.go          # Product entity and validation rules
-│   │   └── order.go            # Order entity and business logic
+│   │   ├── product.go            # Product entity + validation
+│   │   └── order.go              # Order entity + validation
 │   │
-│   ├── port/
-│   │   └── repository.go       # Repository interfaces
+│   ├── port/                     # Interfaces (Ports)
+│   │   ├── product_repository.go # ProductRepository interface
+│   │   └── order_repository.go   # OrderRepository interface
 │   │
-│   ├── usecase/
-│   │   ├── product_service.go  # Product-related use cases
-│   │   └── order_service.go    # Order-related use cases
+│   ├── usecase/                  # Application services (business logic)
+│   │   ├── product_service.go
+│   │   └── order_service.go
 │   │
-│   ├── adapter/
+│   ├── adapter/                  # Interface Adapters (domain ↔ external)
 │   │   ├── http/
-│   │   │   ├── router.go       # Route registration
 │   │   │   ├── handler/
 │   │   │   │   ├── product_handler.go
 │   │   │   │   └── order_handler.go
-│   │   │   └── middleware/     # Logging, auth, CORS
+│   │   │   └── middleware/       # Cross-cutting concerns (logging, auth)
 │   │   │
-│   │   └── repo/
-│   │       └── postgres/
-│   │           ├── product_repo.go
-│   │           └── order_repo.go
+│   │   └── repository/
+│   │       └── mapper.go         # DB row ↔ domain entity mapping
+│   │
+│   └── frameworks/               # Frameworks & Drivers
+│       ├── http/
+│       │   └── router.go         # Gin/net/http router setup, middleware wiring
+│       └── db/
+│           ├── postgres_conn.go  # DB driver init, connection pool
+│           ├── product_repo.go   # Concrete repo implementation
+│           └── order_repo.go
+│
+├── pkg/                          # Optional shared utilities (logger, errors)
 │
 ├── go.mod
 └── README.md
+
 ```
 ---
 
@@ -122,19 +153,6 @@ ecommerce/
 - **Use Case Layer** → Application-specific logic that uses domain models  
 - **Interface Adapters** → Bridges between domain and frameworks (HTTP, DB)  
 - **Frameworks & Drivers** → External services like PostgreSQL, HTTP server  
-
----
-
-## 📅 Development Roadmap
-
-- [ ] Set up basic project structure with Go modules  
-- [ ] Implement PostgreSQL connection and repository interfaces  
-- [ ] Add product & order domain models  
-- [ ] Create HTTP handlers and routing  
-- [ ] Implement authentication middleware  
-- [ ] Write unit tests and integration tests  
-- [ ] Add CI/CD pipelines  
-- [ ] Prepare production deployment scripts  
 
 ---
 
