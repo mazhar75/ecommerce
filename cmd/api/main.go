@@ -3,10 +3,10 @@ package main
 import (
 	// alias
 	"fmt"
-	httpadapter "github/ecommerce/internal/adpter/http"
 	"github/ecommerce/internal/adpter/http/handler"
 	"github/ecommerce/internal/domain/product"
-	"github/ecommerce/internal/repo/memory"
+	httpadapter "github/ecommerce/internal/framework/http"
+	"github/ecommerce/internal/framework/memory"
 	"github/ecommerce/internal/usecase"
 	"log"
 	"net/http"
