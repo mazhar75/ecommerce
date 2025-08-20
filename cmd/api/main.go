@@ -4,6 +4,7 @@ import (
 	// alias
 	"fmt"
 	"github/ecommerce/internal/adpter/http/handler"
+	"github/ecommerce/internal/adpter/http/middleware"
 	"github/ecommerce/internal/domain/product"
 	httpadapter "github/ecommerce/internal/framework/http"
 	"github/ecommerce/internal/framework/memory"
@@ -32,7 +33,8 @@ func main() {
 	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()
 	httpadapter.RegisterRoutes(mux, productHandler)
-	err := http.ListenAndServe(":9090", mux)
+	corsHandler := middleware.CorsMiddleware(mux)
+	err := http.ListenAndServe(":9090", corsHandler)
 	if err != nil {
 		log.Fatal(err)
 	}
