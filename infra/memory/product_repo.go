@@ -2,8 +2,7 @@ package memory
 
 import (
 	"errors"
-	"github/ecommerce/internal/domain/product"
-	"github/ecommerce/internal/port"
+	"github/ecommerce/domain/product"
 )
 
 type ProductRepo struct {
@@ -11,7 +10,7 @@ type ProductRepo struct {
 }
 
 // compile-time check
-var _ port.ProductRepository = &ProductRepo{}
+var _ product.ProductRepository = &ProductRepo{}
 
 func (r *ProductRepo) GetById(id int) (product.Product, error) {
 	for _, p := range r.ProductList {

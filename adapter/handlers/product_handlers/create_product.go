@@ -1,8 +1,8 @@
-package product_handler
+package product_handlers
 
 import (
 	"encoding/json"
-	"github/ecommerce/internal/domain/product"
+	"github/ecommerce/domain/product"
 	"net/http"
 )
 

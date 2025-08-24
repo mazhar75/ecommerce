@@ -1,16 +1,15 @@
 package usecase
 
 import (
-	"github/ecommerce/internal/domain/product"
-	"github/ecommerce/internal/port"
+	"github/ecommerce/domain/product"
 )
 
 type ProductService struct {
-	Repo port.ProductRepository
+	Repo product.ProductRepository
 }
 
 // Constructor
-func NewProductService(repo port.ProductRepository) *ProductService {
+func NewProductService(repo product.ProductRepository) *ProductService {
 	return &ProductService{Repo: repo}
 }
 

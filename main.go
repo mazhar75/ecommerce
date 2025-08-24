@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github/ecommerce/adapter/handlers/product_handlers"
 	"github/ecommerce/cmd"
-	"github/ecommerce/internal/adpter/http/handler/product_handler"
-	"github/ecommerce/internal/domain/product"
-	"github/ecommerce/internal/framework/memory"
-	"github/ecommerce/internal/usecase"
+	"github/ecommerce/domain/product"
+	"github/ecommerce/infra/memory"
+	"github/ecommerce/usecase"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	}
 
 	service := usecase.NewProductService(&products)
-	productHandler := product_handler.NewProductHandler(service)
+	productHandler := product_handlers.NewProductHandler(service)
 
 	cmd.CreateServer(productHandler)
 }

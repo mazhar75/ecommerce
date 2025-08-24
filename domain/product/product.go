@@ -13,3 +13,9 @@ type Product struct {
 	Price       float64 `json:"price"`
 	ImgUrl      string  `json:"img_url"`
 }
+
+type ProductRepository interface {
+	GetById(id int) (Product, error)
+	GetAll() ([]Product, error)
+	InsertProduct(p Product) error
+}
