@@ -1,160 +1,158 @@
 
-# 🛒 Ecommerce Platform (In Development)
+# 🛒 Ecommerce Platform
 
-A fully-featured e-commerce backend currently under active development.  
-This project is being built with **Clean Architecture** and **Software Engineering Best Practices** to ensure long-term scalability, maintainability, and testability.
-
----
+A modern e-commerce backend built with Go, following Clean Architecture principles and Domain-Driven Design patterns for scalability and maintainability.
 
 ## 📌 Project Status
-🚧 **Work in Progress** — This repository contains the ongoing implementation of the backend.  
-Features, APIs, and modules are being gradually developed and tested.
+🚧 **Active Development** — Core features are implemented with ongoing enhancements.
 
----
+## ✨ Current Features
 
-## 🎯 Goals & Best Practices
+- **Product Management:** CRUD operations for product catalog
+- **Domain Models:** Product, Cart, Order, Payment, Review, and User entities
+- **RESTful API:** HTTP endpoints with proper routing
+- **Middleware Stack:** CORS, logging, and custom middleware chain
+- **In-Memory Storage:** Initial implementation with memory repository
+- **Clean Architecture:** Separation of concerns across layers
 
-- **Clean Architecture Layers:** Domain, Use Case, Interface Adapters, Frameworks & Drivers  
-- **Domain-Driven Design (DDD):** Business logic separated from infrastructure concerns  
-- **REST API Standards:** Consistent HTTP methods, status codes, and payload structures  
-- **GitHub Workflow:** Commit conventions, PR reviews, and feature branches  
-- **CI/CD Ready:** Plan for automated testing and deployment pipelines  
-- **PostgreSQL Integration:** Scalable relational database backend  
-- **Middleware Plan:** Logging, authentication, and CORS handling  
+## 🚀 Getting Started
 
----
+### Prerequisites
+- Go 1.24.2 or higher
 
-## 📂 Planned Project Structure
+### Installation
+```bash
+git clone https://github.com/mazhar75/ecommerce.git
+cd ecommerce
+go mod download
+```
 
-```plaintext
+### Running the Application
+```bash
+go run main.go
+```
 
-          ┌───────────────────────┐
-          │        main.go          │
-          │ (cmd/api/main.go)       │
-          │                         │
-          │ - Loads config/env      │
-          │ - Initializes DB Conn   │
-          │ - Creates Repo (DB impl)│
-          │ - Injects Repo into     │
-          │   Usecase(Service)      │
-          │ - Injects Service into  │
-          │   HTTP Handler          │
-          │ - Starts HTTP Router    │
-          └───────────┬─────────────┘
-                      │
-                      ▼
-          ┌───────────────────────────┐
-          │  Frameworks / HTTP Router │
-          │ (internal/frameworks/http)│
-          │                           │
-          │ - Registers routes        │
-          │ - Attaches middleware     │
-          │ - Delegates to Handlers   │
-          └───────────┬───────────────┘
-                      │
-                      ▼
-          ┌───────────────────────────┐
-          │     Handler / Adapter     │
-          │ (internal/adapter/http)   │
-          │                           │
-          │ - Receives HTTP requests  │
-          │ - Maps Req → Usecase DTO  │
-          │ - Calls Usecase methods   │
-          │ - Returns response        │
-          └───────────┬───────────────┘
-                      │
-                      ▼
-          ┌───────────────────────────┐
-          │      Usecase / Service    │
-          │ (internal/usecase)        │
-          │                           │
-          │ - Business logic rules    │
-          │ - Depends on Port         │
-          │   (ProductRepository)     │
-          └───────────┬───────────────┘
-                      │
-                      ▼
-          ┌───────────────────────────┐
-          │       Port / Interface    │
-          │ (internal/port)           │
-          │                           │
-          │ - Defines contract:       │
-          │   ProductRepository       │
-          │ - e.g. GetAll(), GetByID()│
-          └───────────┬───────────────┘
-                      │
-                      ▼
-          ┌───────────────────────────┐
-          │  Adapter + Framework Repo │
-          │ (adapter/repo +           │
-          │  frameworks/db/postgres)  │
-          │                           │
-          │ - Mapper (domain <-> row) │
-          │ - Concrete DBRepo impl    │
-          │ - Uses DB driver/sql/gorm │
-          │ - Implements Port         │
-          └───────────────────────────┘
+The server will start on the configured port (default: 8080).
 
+## 🔌 API Endpoints
 
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/products` | Get all products |
+| GET | `/products/{productId}` | Get product by ID |
+| POST | `/products` | Create new product |
 
+## 🏗️ Architecture
 
-ecommerce/
-│
-├── cmd/
-│   └── api/
-│       └── main.go               # Entry point: init config, DB, repos, usecases, router
-│
-├── internal/
-│   ├── config/
-│   │   ├── app.go                # App-level config (env, port, secrets)
-│   │   └── db.go                 # DB connection setup (driver, pool)
-│   │
-│   ├── domain/
-│   │   ├── product.go            # Product entity + validation
-│   │   └── order.go              # Order entity + validation
-│   │
-│   ├── port/                     # Interfaces (Ports)
-│   │   ├── product_repository.go # ProductRepository interface
-│   │   └── order_repository.go   # OrderRepository interface
-│   │
-│   ├── usecase/                  # Application services (business logic)
-│   │   ├── product_service.go
-│   │   └── order_service.go
-│   │
-│   ├── adapter/                  # Interface Adapters (domain ↔ external)
-│   │   ├── http/
-│   │   │   ├── handler/
-│   │   │   │   ├── product_handler.go
-│   │   │   │   └── order_handler.go
-│   │   │   └── middleware/       # Cross-cutting concerns (logging, auth)
-│   │   │
-│   │   └── repository/
-│   │       └── mapper.go         # DB row ↔ domain entity mapping
-│   │
-│   └── frameworks/               # Frameworks & Drivers
-│       ├── http/
-│       │   └── router.go         # Gin/net/http router setup, middleware wiring
-│       └── db/
-│           ├── postgres_conn.go  # DB driver init, connection pool
-│           ├── product_repo.go   # Concrete repo implementation
-│           └── order_repo.go
-│
-├── pkg/                          # Optional shared utilities (logger, errors)
-│
-├── go.mod
-└── README.md
+The project follows Clean Architecture with clear separation of concerns:
+
+- **Domain Layer:** Core business entities and rules
+- **Use Case Layer:** Application-specific business logic
+- **Adapter Layer:** Interface adapters for HTTP handlers
+- **Infrastructure Layer:** External frameworks and drivers
+
+## 📂 Current Project Structure
 
 ```
----
+ecommerce/
+├── adapter/                      # Interface adapters
+│   └── handlers/
+│       └── product_handlers/     # Product HTTP handlers
+│           ├── create_product.go
+│           ├── get_product.go
+│           ├── get_product_by_id.go
+│           └── handler.go
+├── cmd/                          # Application commands
+│   ├── router.go                 # HTTP route registration
+│   └── serve.go                  # Server initialization
+├── config/                       # Configuration (empty - planned)
+├── domain/                       # Business entities
+│   ├── cart/
+│   │   └── cart.go              # Cart entity
+│   ├── order/
+│   │   └── order.go             # Order entity
+│   ├── payment/
+│   │   └── payment.go           # Payment entity
+│   ├── product/
+│   │   └── product.go           # Product entity
+│   ├── review/
+│   │   └── review.go            # Review entity
+│   └── user/
+│       └── user.go              # User entity
+├── drivers/                      # External drivers (empty - planned)
+├── infra/                        # Infrastructure layer
+│   ├── db/                      # Database (empty - planned)
+│   └── memory/
+│       └── product_repo.go      # In-memory product repository
+├── interfaces/                   # Port interfaces (empty - planned)
+├── middlewares/                  # HTTP middlewares
+│   ├── cors.go                  # CORS middleware
+│   ├── logger.go                # Request logging middleware
+│   ├── manager.go               # Middleware chain manager
+│   ├── test1.go                 # Test middleware 1
+│   └── test2.go                 # Test middleware 2
+├── usecase/                      # Business logic
+│   └── product_service.go       # Product service implementation
+├── go.mod                        # Go module file
+├── main.go                       # Application entry point
+└── README.md                     # This file
+```
 
-## 🏗️ Clean Architecture Vision
+## 🛠️ Tech Stack
 
-- **Domain Layer** → Business entities and rules (independent of frameworks)  
-- **Use Case Layer** → Application-specific logic that uses domain models  
-- **Interface Adapters** → Bridges between domain and frameworks (HTTP, DB)  
-- **Frameworks & Drivers** → External services like PostgreSQL, HTTP server  
+- **Language:** Go 1.24.2
+- **Architecture:** Clean Architecture / Hexagonal Architecture
+- **HTTP Server:** net/http (standard library)
+- **Storage:** In-memory (transitioning to PostgreSQL)
 
----
+## 🔄 Development Roadmap
 
-## 📜 License
-This project will be licensed under the MIT License after its first release.
+### Phase 1: Foundation ✅
+- [x] Project structure setup
+- [x] Domain models definition
+- [x] Basic product CRUD operations
+- [x] Middleware implementation
+- [x] In-memory repository
+
+### Phase 2: Core Features (In Progress)
+- [ ] User authentication and authorization
+- [ ] Shopping cart functionality
+- [ ] Order management system
+- [ ] Payment integration
+- [ ] Product reviews and ratings
+
+### Phase 3: Infrastructure
+- [ ] PostgreSQL database integration
+- [ ] Database migrations
+- [ ] Environment configuration
+- [ ] Error handling improvements
+- [ ] Input validation
+
+### Phase 4: Advanced Features
+- [ ] Search and filtering
+- [ ] Inventory management
+- [ ] Email notifications
+- [ ] Admin dashboard API
+- [ ] Analytics and reporting
+
+### Phase 5: Production Ready
+- [ ] Unit and integration tests
+- [ ] API documentation (OpenAPI/Swagger)
+- [ ] Docker containerization
+- [ ] CI/CD pipeline
+- [ ] Performance optimization
+- [ ] Security hardening
+
+## 👥 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is currently under development. License will be added upon first release.
