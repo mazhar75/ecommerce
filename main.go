@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github/ecommerce/adapter/handlers/health_handler"
 	"github/ecommerce/adapter/handlers/product_handlers"
 	"github/ecommerce/cmd"
+	"github/ecommerce/domain/health"
 	"github/ecommerce/domain/product"
 	"github/ecommerce/infra/memory"
 	"github/ecommerce/usecase"
@@ -17,8 +19,18 @@ func main() {
 		},
 	}
 
-	service := usecase.NewProductService(&products)
-	productHandler := product_handlers.NewProductHandler(service)
+	_health := memory.HealthRepo{
+		Health: health.Health{
+			Status:  200,
+			Message: "OK",
+		},
+	}
 
-	cmd.CreateServer(productHandler)
+	productservice := usecase.NewProductService(&products)
+	productHandler := product_handlers.NewProductHandler(productservice)
+
+	healthservice := usecase.NewHealthService(&_health)
+	healthHandler := health_handler.NewHealthHandler(healthservice)
+
+	cmd.CreateServer(productHandler, healthHandler)
 }
