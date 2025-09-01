@@ -3,13 +3,18 @@ package cmd
 
 import (
 	"fmt"
+	"github/ecommerce/config"
 	"github/ecommerce/domain/routes"
 	"github/ecommerce/middlewares"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func CreateServer(handlers ...routes.RouteRegister) {
+
+	config := config.NewConfig()
+
 	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()
 	manager := middlewares.NewManager()
@@ -18,8 +23,8 @@ func CreateServer(handlers ...routes.RouteRegister) {
 	for _, h := range handlers {
 		h.RegisterRoutes(mux, manager)
 	}
-
-	err := http.ListenAndServe(":9090", mux)
+	str := ":" + strconv.Itoa(config.HttpPORT)
+	err := http.ListenAndServe(str, mux)
 	if err != nil {
 		log.Fatal(err)
 	}
