@@ -3,8 +3,9 @@ package cmd
 
 import (
 	"fmt"
+	"github/ecommerce/adapter/routes"
 	"github/ecommerce/config"
-	"github/ecommerce/domain/routes"
+	"github/ecommerce/infra/postgresql"
 	"github/ecommerce/middlewares"
 	"log"
 	"net/http"
@@ -13,7 +14,15 @@ import (
 
 func CreateServer(handlers ...routes.RouteRegister) {
 
-	config := config.NewConfig()
+	cnf := config.NewConfig()
+
+	// dsn := "postgres://postgres:1234@localhost:5432/ecommerce?sslmode=disable"
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cnf.DbUser, cnf.DbPass, cnf.DbHost, cnf.DbPort, cnf.DbName)
+	conn, err := postgresql.DbConnection(&dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
 
 	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()
@@ -23,8 +32,8 @@ func CreateServer(handlers ...routes.RouteRegister) {
 	for _, h := range handlers {
 		h.RegisterRoutes(mux, manager)
 	}
-	str := ":" + strconv.Itoa(config.HttpPORT)
-	err := http.ListenAndServe(str, mux)
+	str := ":" + strconv.Itoa(cnf.HttpPORT)
+	err = http.ListenAndServe(str, mux)
 	if err != nil {
 		log.Fatal(err)
 	}

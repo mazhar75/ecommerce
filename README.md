@@ -19,6 +19,8 @@ A modern e-commerce backend built with Go, following Clean Architecture principl
 
 ### Prerequisites
 - Go 1.24.2 or higher
+- PostgreSQL 12+ (for database functionality)
+- Environment file (.env) with required configurations
 
 ### Installation
 ```bash
@@ -27,17 +29,31 @@ cd ecommerce
 go mod download
 ```
 
+### Configuration
+Create a `.env` file in the project root with the following variables:
+```env
+SERVICE_NAME=ecommerce
+VERSION=1.0.0
+PORT=9090
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=ecommerce
+DB_USER=postgres
+DB_PASSWORD=your_password
+```
+
 ### Running the Application
 ```bash
 go run main.go
 ```
 
-The server will start on the configured port (default: 8080).
+The server will start on the configured port (default: 9090).
 
 ## 🔌 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| GET | `/health` | Health check endpoint |
 | GET | `/products` | Get all products |
 | GET | `/products/{productId}` | Get product by ID |
 | POST | `/products` | Create new product |
@@ -56,19 +72,27 @@ The project follows Clean Architecture with clear separation of concerns:
 ```
 ecommerce/
 ├── adapter/                      # Interface adapters
-│   └── handlers/
-│       └── product_handlers/     # Product HTTP handlers
-│           ├── create_product.go
-│           ├── get_product.go
-│           ├── get_product_by_id.go
-│           └── handler.go
+│   ├── handlers/
+│   │   ├── health_handler/       # Health check handler
+│   │   │   └── health.go
+│   │   └── product_handlers/     # Product HTTP handlers
+│   │       ├── create_product.go
+│   │       ├── get_product.go
+│   │       ├── get_product_by_id.go
+│   │       └── handler.go
+│   └── routes/                   # Route interfaces
+│       └── global_routes.go      # Route registration interface
 ├── cmd/                          # Application commands
 │   ├── router.go                 # HTTP route registration
-│   └── serve.go                  # Server initialization
-├── config/                       # Configuration (empty - planned)
+│   └── serve.go                  # Server initialization with DB
+├── config/                       # Configuration management
+│   ├── config.go                 # Configuration structure
+│   └── loadenv.go                # Environment loader
 ├── domain/                       # Business entities
 │   ├── cart/
 │   │   └── cart.go              # Cart entity
+│   ├── health/
+│   │   └── health.go            # Health entity
 │   ├── order/
 │   │   └── order.go             # Order entity
 │   ├── payment/
@@ -82,8 +106,11 @@ ecommerce/
 ├── drivers/                      # External drivers (empty - planned)
 ├── infra/                        # Infrastructure layer
 │   ├── db/                      # Database (empty - planned)
-│   └── memory/
-│       └── product_repo.go      # In-memory product repository
+│   ├── memory/                   # In-memory repositories
+│   │   ├── health_repo.go       # Health repository
+│   │   └── product_repo.go      # Product repository
+│   └── postgresql/               # PostgreSQL integration
+│       └── db.go                 # Database connection
 ├── interfaces/                   # Port interfaces (empty - planned)
 ├── middlewares/                  # HTTP middlewares
 │   ├── cors.go                  # CORS middleware
@@ -92,8 +119,11 @@ ecommerce/
 │   ├── test1.go                 # Test middleware 1
 │   └── test2.go                 # Test middleware 2
 ├── usecase/                      # Business logic
+│   ├── health_service.go        # Health service implementation
 │   └── product_service.go       # Product service implementation
+├── .env                          # Environment variables (not in repo)
 ├── go.mod                        # Go module file
+├── go.sum                        # Go dependencies lock file
 ├── main.go                       # Application entry point
 └── README.md                     # This file
 ```
@@ -103,7 +133,9 @@ ecommerce/
 - **Language:** Go 1.24.2
 - **Architecture:** Clean Architecture / Hexagonal Architecture
 - **HTTP Server:** net/http (standard library)
-- **Storage:** In-memory (transitioning to PostgreSQL)
+- **Database:** PostgreSQL (with lib/pq driver)
+- **Storage:** In-memory repositories with PostgreSQL integration
+- **Configuration:** Environment-based configuration
 
 ## 🔄 Development Roadmap
 
@@ -113,6 +145,8 @@ ecommerce/
 - [x] Basic product CRUD operations
 - [x] Middleware implementation
 - [x] In-memory repository
+- [x] Health check endpoint
+- [x] Route registration interface
 
 ### Phase 2: Core Features (In Progress)
 - [ ] User authentication and authorization
@@ -121,10 +155,10 @@ ecommerce/
 - [ ] Payment integration
 - [ ] Product reviews and ratings
 
-### Phase 3: Infrastructure
-- [ ] PostgreSQL database integration
+### Phase 3: Infrastructure (In Progress)
+- [x] PostgreSQL database integration
+- [x] Environment configuration
 - [ ] Database migrations
-- [ ] Environment configuration
 - [ ] Error handling improvements
 - [ ] Input validation
 

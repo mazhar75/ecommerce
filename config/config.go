@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	Service  string
 	Version  string
 	HttpPORT int
+	DbHost   string
+	DbPort   string
+	DbName   string
+	DbUser   string
+	DbPass   string
 }
 
 func NewConfig() Config {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	loadENV()
 	version := os.Getenv("VERSION")
 	if version == "" {
 		fmt.Println("env not loaded")
@@ -36,10 +35,24 @@ func NewConfig() Config {
 		fmt.Println("Give a valid port")
 		os.Exit(1)
 	}
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASSWORD")
+	if dbHost == "" || dbPort == "" || dbName == "" || dbUser == "" || dbPass == "" {
+		fmt.Println("Check your db configurations in env file")
+		os.Exit(1)
+	}
 	return Config{
 		Service:  service,
 		Version:  version,
 		HttpPORT: port,
+		DbHost:   dbHost,
+		DbPort:   dbPort,
+		DbName:   dbName,
+		DbUser:   dbUser,
+		DbPass:   dbPass,
 	}
 
 }
