@@ -41,3 +41,18 @@ func (r *ProductRepo) UpdateProduct(p product.Product) error {
 	}
 	return errors.New("Not found")
 }
+func (r *ProductRepo) DeleteProduct(pId int) error {
+
+	index := -1
+	for i := 0; i < len(r.ProductList); i++ {
+		if r.ProductList[i].ProductId == pId {
+			index = i
+			break
+		}
+	}
+	if index == -1 {
+		return errors.New("Product not found")
+	}
+	r.ProductList = append(r.ProductList[:index], r.ProductList[index+1:]...)
+	return nil
+}

@@ -29,6 +29,7 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	err = h.Service.UpdateProduct(prod)
 	if err != nil {
 		http.Error(w, "invalid product", http.StatusNotFound)
+		return
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("Resource updated successfully"))

@@ -19,4 +19,5 @@ type ProductRepository interface {
 	GetAll() ([]Product, error)
 	InsertProduct(p Product) error
 	UpdateProduct(p Product) error
+	DeleteProduct(pId int) error
 }
