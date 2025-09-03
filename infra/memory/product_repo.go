@@ -31,3 +31,13 @@ func (r *ProductRepo) InsertProduct(p product.Product) error {
 	r.ProductList = append(r.ProductList, p)
 	return nil
 }
+
+func (r *ProductRepo) UpdateProduct(p product.Product) error {
+	for i := 0; i < len(r.ProductList); i++ {
+		if r.ProductList[i].ProductId == p.ProductId {
+			r.ProductList[i] = p
+			return nil
+		}
+	}
+	return errors.New("Not found")
+}

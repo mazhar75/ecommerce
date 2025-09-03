@@ -15,7 +15,8 @@ type Product struct {
 }
 
 type ProductRepository interface {
-	GetById(id int) (Product, error)
+	GetById(pId int) (Product, error)
 	GetAll() ([]Product, error)
 	InsertProduct(p Product) error
+	UpdateProduct(p Product) error
 }
