@@ -7,11 +7,12 @@ import (
 	"github/ecommerce/domain/health"
 	"github/ecommerce/domain/product"
 	"github/ecommerce/infra/memory"
+	"github/ecommerce/infra/postgresql"
 	"github/ecommerce/usecase"
 )
 
 func main() {
-	products := memory.ProductRepo{
+	products := postgresql.ProductRepo{
 		ProductList: []product.Product{
 			{ProductId: 1, Name: "Mango", Description: "Good quality", Type: "Fruits", Price: 70, ImgUrl: ""},
 			{ProductId: 2, Name: "Mouse", Description: "Good quality", Type: "Electronics", Price: 100, ImgUrl: ""},
