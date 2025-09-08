@@ -4,7 +4,7 @@ package cmd
 import (
 	"fmt"
 	"github/ecommerce/adapter/routes"
-	"github/ecommerce/config"
+
 	"github/ecommerce/infra/postgresql"
 	"github/ecommerce/middlewares"
 	"log"
@@ -14,11 +14,8 @@ import (
 
 func CreateServer(handlers ...routes.RouteRegister) {
 
-	dsn := config.DbString()
-	conn, err := postgresql.DbConnection(dsn)
-	if err != nil {
-		panic(err)
-	}
+	conn := postgresql.GetDB()
+
 	defer conn.Close()
 
 	fmt.Println("Server starting...at 9090")
@@ -30,7 +27,7 @@ func CreateServer(handlers ...routes.RouteRegister) {
 		h.RegisterRoutes(mux, manager)
 	}
 	str := ":" + strconv.Itoa(9090)
-	err = http.ListenAndServe(str, mux)
+	err := http.ListenAndServe(str, mux)
 	if err != nil {
 		log.Fatal(err)
 	}

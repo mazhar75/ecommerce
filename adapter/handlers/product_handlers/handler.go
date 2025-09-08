@@ -18,4 +18,6 @@ func (h *ProductHandler) RegisterRoutes(mux *http.ServeMux, manager *middlewares
 	mux.Handle("GET /products", manager.With(http.HandlerFunc(h.GetProducts)))
 	mux.Handle("GET /products/{productId}", manager.With(http.HandlerFunc(h.GetProductById)))
 	mux.Handle("POST /products", manager.With(http.HandlerFunc(h.CreateProduct)))
+	mux.Handle("PUT /products/{productId}", manager.With(http.HandlerFunc(h.UpdateProduct)))
+	mux.Handle("DELETE /products/{productId}", manager.With(http.HandlerFunc(h.DeleteProduct)))
 }

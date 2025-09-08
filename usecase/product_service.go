@@ -24,3 +24,9 @@ func (s *ProductService) GetByID(id int) (product.Product, error) {
 func (s *ProductService) InsertProduct(p product.Product) error {
 	return s.Repo.InsertProduct(p)
 }
+func (s *ProductService) UpdateProduct(p product.Product) error {
+	return s.Repo.UpdateProduct(p)
+}
+func (s *ProductService) DeleteProduct(pId int) error {
+	return s.Repo.DeleteProduct(pId)
+}
