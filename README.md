@@ -8,11 +8,11 @@ A modern e-commerce backend built with Go, following Clean Architecture principl
 
 ## ✨ Current Features
 
-- **Product Management:** CRUD operations for product catalog
+- **Product Management:** Full CRUD operations for product catalog with PostgreSQL persistence
 - **Domain Models:** Product, Cart, Order, Payment, Review, and User entities
 - **RESTful API:** HTTP endpoints with proper routing
 - **Middleware Stack:** CORS, logging, and custom middleware chain
-- **In-Memory Storage:** Initial implementation with memory repository
+- **PostgreSQL Storage:** Database-backed product repository with migrations
 - **Clean Architecture:** Separation of concerns across layers
 
 ## 🚀 Getting Started
@@ -27,6 +27,17 @@ A modern e-commerce backend built with Go, following Clean Architecture principl
 git clone https://github.com/mazhar75/ecommerce.git
 cd ecommerce
 go mod download
+```
+
+### Database Setup
+1. Ensure PostgreSQL is running on your system
+2. Create the database:
+```sql
+CREATE DATABASE ecommerce;
+```
+3. Run migrations (manually for now):
+```bash
+psql -U postgres -d ecommerce -f migrations/001_init_schema.up.sql
 ```
 
 ### Configuration
@@ -57,6 +68,8 @@ The server will start on the configured port (default: 9090).
 | GET | `/products` | Get all products |
 | GET | `/products/{productId}` | Get product by ID |
 | POST | `/products` | Create new product |
+| PUT | `/products/{productId}` | Update existing product |
+| DELETE | `/products/{productId}` | Delete product |
 
 ## 🏗️ Architecture
 
@@ -77,9 +90,11 @@ ecommerce/
 │   │   │   └── health.go
 │   │   └── product_handlers/     # Product HTTP handlers
 │   │       ├── create_product.go
+│   │       ├── delete_product.go
 │   │       ├── get_product.go
 │   │       ├── get_product_by_id.go
-│   │       └── handler.go
+│   │       ├── handler.go
+│   │       └── update_product.go
 │   └── routes/                   # Route interfaces
 │       └── global_routes.go      # Route registration interface
 ├── cmd/                          # Application commands
@@ -107,10 +122,10 @@ ecommerce/
 ├── infra/                        # Infrastructure layer
 │   ├── db/                      # Database (empty - planned)
 │   ├── memory/                   # In-memory repositories
-│   │   ├── health_repo.go       # Health repository
-│   │   └── product_repo.go      # Product repository
+│   │   └── health_repo.go       # Health repository
 │   └── postgresql/               # PostgreSQL integration
-│       └── db.go                 # Database connection
+│       ├── db.go                 # Database connection
+│       └── product_repo.go      # PostgreSQL product repository
 ├── interfaces/                   # Port interfaces (empty - planned)
 ├── middlewares/                  # HTTP middlewares
 │   ├── cors.go                  # CORS middleware
@@ -118,6 +133,9 @@ ecommerce/
 │   ├── manager.go               # Middleware chain manager
 │   ├── test1.go                 # Test middleware 1
 │   └── test2.go                 # Test middleware 2
+├── migrations/                   # Database migrations
+│   ├── 001_init_schema.down.sql # Initial schema rollback
+│   └── 001_init_schema.up.sql   # Initial schema setup
 ├── usecase/                      # Business logic
 │   ├── health_service.go        # Health service implementation
 │   └── product_service.go       # Product service implementation
@@ -133,8 +151,8 @@ ecommerce/
 - **Language:** Go 1.24.2
 - **Architecture:** Clean Architecture / Hexagonal Architecture
 - **HTTP Server:** net/http (standard library)
-- **Database:** PostgreSQL (with lib/pq driver)
-- **Storage:** In-memory repositories with PostgreSQL integration
+- **Database:** PostgreSQL 12+ (with lib/pq driver)
+- **Storage:** PostgreSQL repositories (migrated from in-memory)
 - **Configuration:** Environment-based configuration
 
 ## 🔄 Development Roadmap
@@ -142,7 +160,7 @@ ecommerce/
 ### Phase 1: Foundation ✅
 - [x] Project structure setup
 - [x] Domain models definition
-- [x] Basic product CRUD operations
+- [x] Full product CRUD operations (Create, Read, Update, Delete)
 - [x] Middleware implementation
 - [x] In-memory repository
 - [x] Health check endpoint
@@ -155,12 +173,14 @@ ecommerce/
 - [ ] Payment integration
 - [ ] Product reviews and ratings
 
-### Phase 3: Infrastructure (In Progress)
+### Phase 3: Infrastructure ✅ (Partially Complete)
 - [x] PostgreSQL database integration
 - [x] Environment configuration
-- [ ] Database migrations
+- [x] Database migrations (initial schema)
+- [x] Product repository with PostgreSQL
 - [ ] Error handling improvements
 - [ ] Input validation
+- [ ] Additional migrations for other entities
 
 ### Phase 4: Advanced Features
 - [ ] Search and filtering

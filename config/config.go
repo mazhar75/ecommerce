@@ -56,3 +56,9 @@ func NewConfig() Config {
 	}
 
 }
+func DbString() *string {
+	cnf := NewConfig()
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cnf.DbUser, cnf.DbPass, cnf.DbHost, cnf.DbPort, cnf.DbName)
+	return &dsn
+
+}
