@@ -28,7 +28,11 @@ type UserRepo struct {
 // compile-time check
 var _ user.UserRepository = &UserRepo{}
 
+func NewUserRepo(db *sql.DB) *UserRepo {
+	return &UserRepo{DB: db}
+}
 func (r *UserRepo) CreateUser(u user.Users) error {
+
 	// Check if email already exists
 	query := `SELECT email FROM users WHERE email=$1;`
 	var existingEmail string
@@ -55,12 +59,12 @@ func (r *UserRepo) CreateUser(u user.Users) error {
 
 	// Insert user
 	query = `
-		INSERT INTO users (user_id, name, email, password, is_verified)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO users (name, email, password, is_verified)
+		VALUES ($1, $2, $3, $4)
 		RETURNING user_id;
 	`
 	var id int
-	err = r.DB.QueryRow(query, u.UserId, u.Name, u.Email, pass, u.IsVerified).Scan(&id)
+	err = r.DB.QueryRow(query, u.Name, u.Email, pass, u.IsVerified).Scan(&id)
 	if err != nil {
 		return &AppError{
 			Code:    "DB_INSERT_FAIL",

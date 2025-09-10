@@ -10,7 +10,7 @@ type AuthHandler struct {
 	Service *usecase.AuthService
 }
 
-func NewProductHandler(service *usecase.AuthService) *AuthHandler {
+func NewAuthHandler(service *usecase.AuthService) *AuthHandler {
 	return &AuthHandler{Service: service}
 }
 
