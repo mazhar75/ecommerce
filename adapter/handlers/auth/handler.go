@@ -16,4 +16,5 @@ func NewAuthHandler(service *usecase.AuthService) *AuthHandler {
 
 func (h *AuthHandler) RegisterRoutes(mux *http.ServeMux, manager *middlewares.Manager) {
 	mux.Handle("POST /auth/register", manager.With(http.HandlerFunc(h.Register)))
+	mux.Handle("POST /auth/login", manager.With(http.HandlerFunc(h.Login)))
 }
