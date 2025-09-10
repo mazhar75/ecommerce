@@ -4,22 +4,38 @@
 A modern e-commerce backend built with Go, following Clean Architecture principles and Domain-Driven Design patterns for scalability and maintainability.
 
 ## 📌 Project Status
-🚧 **Active Development** — Core features are implemented with ongoing enhancements.
+🚧 **Active Development** — Core authentication and product management features are implemented with ongoing enhancements.
 
 ## ✨ Current Features
 
+### Implemented ✅
+- **Authentication System:** User registration and login with email/password
+- **Custom JWT Implementation:** From-scratch JWT token generation and validation
 - **Product Management:** Full CRUD operations for product catalog with PostgreSQL persistence
 - **Domain Models:** Product, Cart, Order, Payment, Review, and User entities
 - **RESTful API:** HTTP endpoints with proper routing
 - **Middleware Stack:** CORS, logging, and custom middleware chain
-- **PostgreSQL Storage:** Database-backed product repository with migrations
+- **PostgreSQL Storage:** Database-backed repositories with migrations
 - **Clean Architecture:** Separation of concerns across layers
+- **Error Handling:** Custom AppError type with HTTP status mapping
+
+### In Progress 🚧
+- JWT token integration in authentication flow
+- Protected route middleware
+- Shopping cart functionality
+- Order management system
+
+### Planned 📋
+- Payment processing
+- Product reviews and ratings
+- Input validation and sanitization
+- Unit and integration tests
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Go 1.24.2 or higher
-- PostgreSQL 12+ (for database functionality)
+- PostgreSQL 12+ 
 - Environment file (.env) with required configurations
 
 ### Installation
@@ -35,9 +51,13 @@ go mod download
 ```sql
 CREATE DATABASE ecommerce;
 ```
-3. Run migrations (manually for now):
+3. Run migrations to create tables:
 ```bash
+# Create tables
 psql -U postgres -d ecommerce -f migrations/001_init_schema.up.sql
+
+# To rollback (if needed)
+psql -U postgres -d ecommerce -f migrations/001_init_schema.down.sql
 ```
 
 ### Configuration
@@ -51,6 +71,9 @@ DB_PORT=5432
 DB_NAME=ecommerce
 DB_USER=postgres
 DB_PASSWORD=your_password
+
+# Note: JWT secret is currently hardcoded in drivers/jwt.go
+# This should be moved to environment variables for production
 ```
 
 ### Running the Application
@@ -62,88 +85,152 @@ The server will start on the configured port (default: 9090).
 
 ## 🔌 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check endpoint |
-| GET | `/products` | Get all products |
-| GET | `/products/{productId}` | Get product by ID |
-| POST | `/products` | Create new product |
-| PUT | `/products/{productId}` | Update existing product |
-| DELETE | `/products/{productId}` | Delete product |
+### Authentication Endpoints
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| POST | `/auth/register` | Register new user with email/password | ✅ Implemented |
+| POST | `/auth/login` | Authenticate user and get token | ⚠️ Partial (no token return) |
+
+### Product Management Endpoints  
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| GET | `/products` | Get all products | ✅ Implemented |
+| GET | `/products/{productId}` | Get product by ID | ✅ Implemented |
+| POST | `/products` | Create new product | ✅ Implemented |
+| PUT | `/products/{productId}` | Update existing product | ✅ Implemented |
+| DELETE | `/products/{productId}` | Delete product | ✅ Implemented |
+
+### Health Check
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| GET | `/health` | System health check | ✅ Implemented |
+
+### Example API Requests
+
+#### Register User
+```bash
+curl -X POST http://localhost:9090/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "securepassword"
+  }'
+```
+
+#### Login User
+```bash
+curl -X POST http://localhost:9090/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "securepassword"
+  }'
+```
+
+#### Create Product
+```bash
+curl -X POST http://localhost:9090/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Laptop",
+    "description": "High-performance laptop",
+    "type": "Electronics",
+    "price": 999.99,
+    "img_url": "https://example.com/laptop.jpg",
+    "category_id": 1
+  }'
+```
 
 ## 🏗️ Architecture
 
 The project follows Clean Architecture with clear separation of concerns:
 
-- **Domain Layer:** Core business entities and rules
-- **Use Case Layer:** Application-specific business logic
-- **Adapter Layer:** Interface adapters for HTTP handlers
-- **Infrastructure Layer:** External frameworks and drivers
+- **Domain Layer:** Core business entities and rules (Product, User, Cart, Order, Payment, Review)
+- **Use Case Layer:** Application-specific business logic (services and use cases)
+- **Adapter Layer:** Interface adapters for HTTP handlers and route registration
+- **Infrastructure Layer:** External frameworks, database implementations, and drivers
 
-## 📂 Current Project Structure
+### Key Architectural Patterns
+- **Repository Pattern:** Clear interfaces with PostgreSQL implementations
+- **Dependency Injection:** Constructor-based DI for loose coupling
+- **Middleware Chain:** Composable middleware with manager pattern
+- **Custom Error Handling:** AppError type with HTTP status mapping
+- **Interface Segregation:** Domain interfaces separate from implementations
+
+## 📂 Project Structure
 
 ```
 ecommerce/
 ├── adapter/                      # Interface adapters
 │   ├── handlers/
-│   │   ├── health_handler/       # Health check handler
+│   │   ├── auth/                # Authentication handlers
+│   │   │   ├── handler.go      # Auth handler interface
+│   │   │   ├── login.go        # Login endpoint
+│   │   │   └── register.go     # Registration endpoint
+│   │   ├── health_handler/      # Health check handler
 │   │   │   └── health.go
-│   │   └── product_handlers/     # Product HTTP handlers
+│   │   └── product_handlers/    # Product HTTP handlers
 │   │       ├── create_product.go
 │   │       ├── delete_product.go
 │   │       ├── get_product.go
 │   │       ├── get_product_by_id.go
 │   │       ├── handler.go
 │   │       └── update_product.go
-│   └── routes/                   # Route interfaces
-│       └── global_routes.go      # Route registration interface
-├── cmd/                          # Application commands
-│   ├── router.go                 # HTTP route registration
-│   └── serve.go                  # Server initialization with DB
-├── config/                       # Configuration management
-│   ├── config.go                 # Configuration structure
-│   └── loadenv.go                # Environment loader
-├── domain/                       # Business entities
+│   └── routes/                  # Route interfaces
+│       └── global_routes.go     # Route registration interface
+├── cmd/                         # Application commands
+│   ├── router.go                # HTTP route registration
+│   └── serve.go                 # Server initialization with DB
+├── config/                      # Configuration management
+│   ├── config.go                # Configuration structure
+│   └── loadenv.go               # Environment loader
+├── domain/                      # Business entities & interfaces
 │   ├── cart/
-│   │   └── cart.go              # Cart entity
+│   │   └── cart.go              # Cart entity (model only)
 │   ├── health/
 │   │   └── health.go            # Health entity
 │   ├── order/
-│   │   └── order.go             # Order entity
+│   │   └── order.go             # Order entity (model only)
 │   ├── payment/
-│   │   └── payment.go           # Payment entity
+│   │   └── payment.go           # Payment entity (model only)
 │   ├── product/
-│   │   └── product.go           # Product entity
+│   │   └── product.go           # Product & Category entities
 │   ├── review/
-│   │   └── review.go            # Review entity
+│   │   └── review.go            # Review entity (model only)
 │   └── user/
-│       └── user.go              # User entity
-├── drivers/                      # External drivers (empty - planned)
-├── infra/                        # Infrastructure layer
-│   ├── db/                      # Database (empty - planned)
-│   ├── memory/                   # In-memory repositories
-│   │   └── health_repo.go       # Health repository
-│   └── postgresql/               # PostgreSQL integration
-│       ├── db.go                 # Database connection
-│       └── product_repo.go      # PostgreSQL product repository
-├── interfaces/                   # Port interfaces (empty - planned)
-├── middlewares/                  # HTTP middlewares
+│       └── user.go              # User entity & interfaces
+├── drivers/                     # External drivers & utilities
+│   ├── hash.go                  # SHA-256 password hashing
+│   └── jwt.go                   # Custom JWT implementation
+├── infra/                       # Infrastructure layer
+│   ├── memory/                  # In-memory repositories
+│   │   └── health_repo.go      # Health repository
+│   └── postgresql/              # PostgreSQL integration
+│       ├── db.go                # Database connection (singleton)
+│       ├── product_repo.go     # Product repository
+│       └── user_repo.go        # User repository
+├── middlewares/                 # HTTP middlewares
 │   ├── cors.go                  # CORS middleware
 │   ├── logger.go                # Request logging middleware
 │   ├── manager.go               # Middleware chain manager
 │   ├── test1.go                 # Test middleware 1
 │   └── test2.go                 # Test middleware 2
-├── migrations/                   # Database migrations
+├── migrations/                  # Database migrations
 │   ├── 001_init_schema.down.sql # Initial schema rollback
 │   └── 001_init_schema.up.sql   # Initial schema setup
-├── usecase/                      # Business logic
-│   ├── health_service.go        # Health service implementation
-│   └── product_service.go       # Product service implementation
-├── .env                          # Environment variables (not in repo)
-├── go.mod                        # Go module file
-├── go.sum                        # Go dependencies lock file
-├── main.go                       # Application entry point
-└── README.md                     # This file
+├── usecase/                     # Business logic services
+│   ├── auth_service.go         # Authentication service
+│   ├── health_service.go       # Health service
+│   ├── product_service.go      # Product service
+│   └── user_service.go         # User service
+├── utils/                       # Utility functions
+│   └── error.go                 # Custom error types
+├── .env                         # Environment variables (not in repo)
+├── go.mod                       # Go module file
+├── go.sum                       # Go dependencies lock file
+├── main.go                      # Application entry point
+└── README.md                    # This file
 ```
 
 ## 🛠️ Tech Stack
@@ -151,51 +238,152 @@ ecommerce/
 - **Language:** Go 1.24.2
 - **Architecture:** Clean Architecture / Hexagonal Architecture
 - **HTTP Server:** net/http (standard library)
-- **Database:** PostgreSQL 12+ (with lib/pq driver)
-- **Storage:** PostgreSQL repositories (migrated from in-memory)
-- **Configuration:** Environment-based configuration
+- **Database:** PostgreSQL 12+ 
+- **Database Driver:** lib/pq v1.10.9
+- **Authentication:** Custom JWT implementation
+- **Password Hashing:** SHA-256 (to be upgraded to bcrypt)
+- **Configuration:** Environment-based with godotenv v1.5.1
+- **Middleware:** Custom middleware chain manager
 
 ## 🔄 Development Roadmap
 
-### Phase 1: Foundation ✅
-- [x] Project structure setup
-- [x] Domain models definition
-- [x] Full product CRUD operations (Create, Read, Update, Delete)
-- [x] Middleware implementation
-- [x] In-memory repository
+### Phase 1: Foundation ✅ Complete
+- [x] Project structure setup with Clean Architecture
+- [x] Domain models definition (User, Product, Cart, Order, Payment, Review)
+- [x] Full product CRUD operations
+- [x] Middleware implementation (CORS, Logger, Chain Manager)
 - [x] Health check endpoint
 - [x] Route registration interface
-
-### Phase 2: Core Features (In Progress)
-- [ ] User authentication and authorization
-- [ ] Shopping cart functionality
-- [ ] Order management system
-- [ ] Payment integration
-- [ ] Product reviews and ratings
-
-### Phase 3: Infrastructure ✅ (Partially Complete)
 - [x] PostgreSQL database integration
 - [x] Environment configuration
 - [x] Database migrations (initial schema)
-- [x] Product repository with PostgreSQL
+
+### Phase 2: Authentication & Authorization 🚧 In Progress
+- [x] User registration with email/password
+- [x] User login endpoint
+- [x] Custom JWT implementation
+- [x] Password hashing (SHA-256)
+- [ ] JWT token return in login response
+- [ ] Protected route middleware
+- [ ] Role-based access control (RBAC)
+- [ ] Password reset functionality
+- [ ] Email verification
+
+### Phase 3: Core E-commerce Features 📋 Planned
+- [ ] Shopping cart functionality
+  - [ ] Add/remove items
+  - [ ] Update quantities
+  - [ ] Cart persistence
+- [ ] Order management system
+  - [ ] Create orders from cart
+  - [ ] Order status tracking
+  - [ ] Order history
+- [ ] Payment integration
+  - [ ] Payment gateway integration
+  - [ ] Transaction handling
+  - [ ] Invoice generation
+- [ ] Product features
+  - [ ] Categories management
+  - [ ] Product search and filtering
+  - [ ] Inventory tracking
+  - [ ] Product images handling
+- [ ] Reviews and ratings system
+
+### Phase 4: Quality & Testing 📋 Planned
+- [ ] Unit tests for all services
+- [ ] Integration tests for handlers
+- [ ] Repository tests
+- [ ] Middleware tests
+- [ ] Input validation and sanitization
 - [ ] Error handling improvements
-- [ ] Input validation
-- [ ] Additional migrations for other entities
+- [ ] Request/Response validation
 
-### Phase 4: Advanced Features
-- [ ] Search and filtering
-- [ ] Inventory management
-- [ ] Email notifications
-- [ ] Admin dashboard API
-- [ ] Analytics and reporting
-
-### Phase 5: Production Ready
-- [ ] Unit and integration tests
+### Phase 5: Production Ready 📋 Planned
 - [ ] API documentation (OpenAPI/Swagger)
 - [ ] Docker containerization
-- [ ] CI/CD pipeline
+- [ ] CI/CD pipeline (GitHub Actions)
 - [ ] Performance optimization
+  - [ ] Database query optimization
+  - [ ] Caching layer (Redis)
+  - [ ] Rate limiting
 - [ ] Security hardening
+  - [ ] Upgrade to bcrypt for passwords
+  - [ ] JWT secret from environment
+  - [ ] HTTPS support
+  - [ ] Security headers
+- [ ] Monitoring and logging
+  - [ ] Structured logging
+  - [ ] Metrics collection
+  - [ ] Health monitoring dashboard
+
+## 🔒 Security Considerations
+
+### Current Security Measures
+- ✅ Parameterized SQL queries (SQL injection protection)
+- ✅ Password hashing before storage
+- ✅ Custom error types to avoid exposing internals
+- ✅ CORS middleware configured
+
+### Security Improvements Needed
+- ⚠️ **JWT Secret:** Currently hardcoded, needs environment variable
+- ⚠️ **Password Hashing:** Using SHA-256, should upgrade to bcrypt
+- ⚠️ **CORS:** Currently allows all origins (`*`)
+- ⚠️ **Input Validation:** No comprehensive validation layer
+- ⚠️ **Rate Limiting:** Not implemented
+- ⚠️ **HTTPS:** No TLS/SSL configuration
+
+## 🧪 Testing
+
+Currently, the project has no test coverage. Testing implementation is planned for Phase 4.
+
+### Planned Test Coverage
+- Unit tests for all business logic services
+- Integration tests for HTTP handlers
+- Repository layer tests
+- Middleware tests
+- End-to-end API tests
+
+To run tests (once implemented):
+```bash
+go test ./...
+```
+
+## 📊 Database Schema
+
+### Current Tables
+
+#### Users Table
+```sql
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### Category Table
+```sql
+CREATE TABLE category (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+```
+
+#### Product Table
+```sql
+CREATE TABLE product (
+    product_id SERIAL PRIMARY KEY,
+    category_id INT REFERENCES category(category_id),
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(255),
+    type VARCHAR(100),
+    price FLOAT NOT NULL,
+    img_url VARCHAR(255)
+);
+```
 
 ## 👥 Contributing
 
@@ -207,6 +395,17 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Development Guidelines
+- Follow Go best practices and conventions
+- Maintain Clean Architecture principles
+- Add appropriate error handling
+- Update documentation for new features
+- Consider adding tests for new functionality
+
 ## 📄 License
 
 This project is currently under development. License will be added upon first release.
+
+## 📞 Contact
+
+For questions or support, please open an issue in the GitHub repository.
