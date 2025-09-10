@@ -7,3 +7,8 @@ type Users struct {
 	Password    string `json:"password"`
 	IsVaerified bool   `json:"is_varified"`
 }
+type UserRepository interface {
+	CreateUser(u Users) error
+	Login(email string, password string) error
+	DeleteUser(uId int) error
+}
