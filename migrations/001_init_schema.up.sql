@@ -1,8 +1,9 @@
-CREATE TABLE "user" (
+CREATE TABLE user (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(20),
     email VARCHAR(25) UNIQUE,
-    password VARCHAR(50)
+    password VARCHAR(50),
+    is_verified boolean
 );
 
 CREATE TABLE category (
