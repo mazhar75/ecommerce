@@ -12,13 +12,13 @@ import (
 
 func main() {
 
-	//product dependencies
+	// //product dependencies
 	db := postgresql.GetDB()
 	repo := postgresql.NewProductRepo(db)
 	productservice := usecase.NewProductService(repo)
 	productHandler := product_handlers.NewProductHandler(productservice)
 
-	//health dependencies-in-memory
+	// //health dependencies-in-memory
 	_health := memory.HealthRepo{
 		Health: health.Health{
 			Status:  200,
@@ -29,4 +29,5 @@ func main() {
 	healthHandler := health_handler.NewHealthHandler(healthservice)
 
 	cmd.CreateServer(productHandler, healthHandler)
+
 }
