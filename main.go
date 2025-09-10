@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github/ecommerce/adapter/handlers/auth"
 	"github/ecommerce/adapter/handlers/health_handler"
 	"github/ecommerce/adapter/handlers/product_handlers"
 	"github/ecommerce/cmd"
@@ -12,13 +13,18 @@ import (
 
 func main() {
 
-	// //product dependencies
+	//product dependencies
 	db := postgresql.GetDB()
 	repo := postgresql.NewProductRepo(db)
 	productservice := usecase.NewProductService(repo)
 	productHandler := product_handlers.NewProductHandler(productservice)
 
-	// //health dependencies-in-memory
+	//auth dependencies
+	authRepo := postgresql.NewUserRepo(db)
+	userService := usecase.NewAuthService(authRepo)
+	authHandler := auth.NewAuthHandler(userService)
+
+	//health dependencies-in-memory
 	_health := memory.HealthRepo{
 		Health: health.Health{
 			Status:  200,
@@ -28,6 +34,6 @@ func main() {
 	healthservice := usecase.NewHealthService(&_health)
 	healthHandler := health_handler.NewHealthHandler(healthservice)
 
-	cmd.CreateServer(productHandler, healthHandler)
+	cmd.CreateServer(productHandler, authHandler, healthHandler)
 
 }
