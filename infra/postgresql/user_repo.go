@@ -59,12 +59,12 @@ func (r *UserRepo) CreateUser(u user.Users) error {
 
 	// Insert user
 	query = `
-		INSERT INTO users (name, email, password, is_verified)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO users (name, email, password, is_verified,is_shop_owner)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING user_id;
 	`
 	var id int
-	err = r.DB.QueryRow(query, u.Name, u.Email, pass, u.IsVerified).Scan(&id)
+	err = r.DB.QueryRow(query, u.Name, u.Email, pass, u.IsVerified, u.IsShopOwner).Scan(&id)
 	if err != nil {
 		return &AppError{
 			Code:    "DB_INSERT_FAIL",
@@ -77,19 +77,22 @@ func (r *UserRepo) CreateUser(u user.Users) error {
 	return nil
 }
 
-func (r *UserRepo) Login(email, password string) error {
-	query := `SELECT password FROM users WHERE email=$1;`
+func (r *UserRepo) Login(email, password string) (string, error) {
+	query := `SELECT user_id,name,password,is_shop_owner FROM users WHERE email=$1;`
+	var userID int
+	var Name string
 	var storedHash string
-	err := r.DB.QueryRow(query, email).Scan(&storedHash)
+	var IsShopOwner bool
+	err := r.DB.QueryRow(query, email).Scan(&userID, &Name, &storedHash, &IsShopOwner)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return &AppError{
+		return "", &AppError{
 			Code:    "USER_NOT_FOUND",
 			Message: "please register first",
 			Err:     err,
 		}
 	} else if err != nil {
-		return &AppError{
+		return "", &AppError{
 			Code:    "DB_QUERY_FAIL",
 			Message: "failed to fetch user by email",
 			Err:     err,
@@ -99,13 +102,34 @@ func (r *UserRepo) Login(email, password string) error {
 	// Hash given password
 	pass := drivers.HashSHA256(password)
 	if pass != storedHash {
-		return &AppError{
+		return "", &AppError{
 			Code:    "INVALID_PASSWORD",
 			Message: "password not matched",
 			Err:     nil,
 		}
 	}
-	return nil
+
+	// update last login
+	updateQuery := `UPDATE users SET last_login = NOW() WHERE user_id = $1;`
+	if _, err := r.DB.Exec(updateQuery, userID); err != nil {
+		return "", &AppError{
+			Code:    "DB_UPDATE_FAIL",
+			Message: "failed to update last_login timestamp",
+			Err:     err,
+		}
+	}
+
+	jwt, err := drivers.CreateJWT(userID, Name, IsShopOwner)
+
+	if err != nil || jwt == "" {
+		return "", &AppError{
+			Code:    "JWT_CREATION",
+			Message: "From Login jwt creation not working",
+			Err:     nil,
+		}
+	}
+
+	return jwt, nil
 }
 
 func (r *UserRepo) DeleteUser(uId int) error {

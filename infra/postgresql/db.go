@@ -1,5 +1,6 @@
 package postgresql
 
+//migrate -path ./migrations -database "postgres://postgres:nihad1086@localhost:5432/ecommerce?sslmode=disable" up
 import (
 	"database/sql"
 	"fmt"

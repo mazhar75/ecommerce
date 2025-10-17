@@ -19,8 +19,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Call service layer to create user
-	err := h.Service.Login(u.Email, u.Password)
+	// Call service layer to check user existance
+	jwt, err := h.Service.Login(u.Email, u.Password)
 	if err != nil {
 		// Check if it's an AppError
 		var appErr *postgresql.AppError
@@ -46,6 +46,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Logged in successfully",
+		"access_token": jwt,
 	})
 }
