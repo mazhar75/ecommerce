@@ -21,3 +21,7 @@ type ProductRepository interface {
 	UpdateProduct(p Product) error
 	DeleteProduct(pId int) error
 }
+
+type CategoryRepository interface {
+	InsertCategory(c Category) (Category, error)
+}
