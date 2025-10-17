@@ -7,17 +7,23 @@ import (
 )
 
 type Config struct {
-	Service  string
-	Version  string
-	HttpPORT int
-	DbHost   string
-	DbPort   string
-	DbName   string
-	DbUser   string
-	DbPass   string
+	Service   string
+	Version   string
+	HttpPORT  int
+	DbHost    string
+	DbPort    string
+	DbName    string
+	DbUser    string
+	DbPass    string
+	jwtSecret string
 }
 
+var config *Config
+
 func NewConfig() Config {
+	if config != nil {
+		return *config
+	}
 	loadENV()
 	version := os.Getenv("VERSION")
 	if version == "" {
@@ -44,16 +50,19 @@ func NewConfig() Config {
 		fmt.Println("Check your db configurations in env file")
 		os.Exit(1)
 	}
-	return Config{
-		Service:  service,
-		Version:  version,
-		HttpPORT: port,
-		DbHost:   dbHost,
-		DbPort:   dbPort,
-		DbName:   dbName,
-		DbUser:   dbUser,
-		DbPass:   dbPass,
+	jwtSecrets := os.Getenv("JWT_SECRET")
+	config = &Config{
+		Service:   service,
+		Version:   version,
+		HttpPORT:  port,
+		DbHost:    dbHost,
+		DbPort:    dbPort,
+		DbName:    dbName,
+		DbUser:    dbUser,
+		DbPass:    dbPass,
+		jwtSecret: jwtSecrets,
 	}
+	return *config
 
 }
 func DbString() *string {
@@ -61,4 +70,8 @@ func DbString() *string {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cnf.DbUser, cnf.DbPass, cnf.DbHost, cnf.DbPort, cnf.DbName)
 	return &dsn
 
+}
+func Get_JWT_SECRET() *string {
+	cnf := NewConfig()
+	return &cnf.jwtSecret
 }
