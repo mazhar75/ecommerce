@@ -72,8 +72,21 @@ func (r *UserRepo) CreateUser(u user.Users) error {
 			Err:     err,
 		}
 	}
+	query = `INSERT INTO cart(user_id)
+	         VALUES ($1)
+			 RETURNING cart_id;
+	`
+	var cart_id int
+	err = r.DB.QueryRow(query, id).Scan(&cart_id)
+	if err != nil {
+		return &AppError{
+			Code:    "DB_INSERT_FAIL",
+			Message: "failed to insert cart",
+			Err:     err,
+		}
+	}
 
-	fmt.Println("Inserted User ID:", id)
+	fmt.Println("Inserted User ID and Cart ID:", id, cart_id)
 	return nil
 }
 
