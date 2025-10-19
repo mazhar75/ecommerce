@@ -12,7 +12,7 @@ type CartItems struct {
 }
 
 type CartRepository interface {
-	GetCartByUserId(user_id int) Carts
+	GetCartByUserId(user_id int) ([]CartItems, error)
 }
 
 type CartItemRepository interface {
