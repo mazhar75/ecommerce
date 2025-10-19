@@ -25,8 +25,8 @@ CREATE TABLE product (
     img_url VARCHAR(255),
     created_at timestamp DEFAULT NOW(),
     FOREIGN KEY (category_id) REFERENCES category(category_id)
-      on delete cascade
-
+     ON DELETE CASCADE
+     
 );
 
 create index users_mail on users(email);
