@@ -10,3 +10,13 @@ type CartItems struct {
 	ProductId   int `json:"product_id"`
 	Quantity    int `json:"quantity"`
 }
+
+type CartRepository interface {
+	GetCartByUserId(user_id int) ([]CartItems, error)
+}
+
+type CartItemRepository interface {
+	AddProductToCart(user_id int, product_id int) error
+	ChangeQuantity(user_id int, product_id int, quantity int) error
+	DeleteProductFromCart(user_id int, product_id int) error
+}
