@@ -34,4 +34,6 @@ func (h *CartItemHandler) AddProductToCart(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Internal server error", 500)
 		return
 	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Cart Item added successfully"))
 }

@@ -35,4 +35,6 @@ func (h *CartItemHandler) UpdateQuantity(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Internal server error", 500)
 		return
 	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Cart Item updatated successfully"))
 }
