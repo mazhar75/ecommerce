@@ -51,6 +51,20 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 
 }
 func (r *CartItemRepo) ChangeQuantity(user_id int, product_id int, quantity int) error {
+	query := `select cart_id from cart where user_id=$1`
+	var cartId int
+	err := db.QueryRow(query, user_id).Scan(&cartId)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	query = `update cart_item set quantity=$1 where cart_id=$2 and product_id=$3`
+	_, err = db.Exec(query, quantity, cartId, product_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 
 }
 func (r *CartItemRepo) DeleteProductFromCart(user_id int, product_id int) error {
