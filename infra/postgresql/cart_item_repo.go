@@ -10,7 +10,7 @@ type CartItemRepo struct {
 	DB *sql.DB
 }
 
-var _ cart.CartItemRepository = &cart.CartItemRepository{}
+var _ cart.CartItemRepository = &CartItemRepo{}
 
 func NewCartItemRepo(db *sql.DB) *CartItemRepo {
 	return &CartItemRepo{DB: db}
@@ -34,6 +34,10 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 		quantity := 1
 		query = `insert into cart_items(cart_id,product_id,quantity) values($1,$2,$3)`
 		err = db.QueryRow(query, cartId, product_id, quantity).Scan(&cartItemId)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 		fmt.Println("Product added user:", product_id, user_id)
 		return nil
 
@@ -68,5 +72,18 @@ func (r *CartItemRepo) ChangeQuantity(user_id int, product_id int, quantity int)
 
 }
 func (r *CartItemRepo) DeleteProductFromCart(user_id int, product_id int) error {
-
+	query := `select cart_id from cart where user_id=$1`
+	var cartId int
+	err := db.QueryRow(query, user_id).Scan(&cartId)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	query = `delete from cart_item where cart_id=$1 and product_id=$2`
+	_, err = db.Exec(query, cartId, product_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
