@@ -109,7 +109,11 @@ The server will start on the configured port (default: 9090).
 ### Shopping Cart Endpoints  
 | Method | Endpoint | Description | Status |
 |--------|----------|-------------|--------|
-| GET | `/cart/{userId}` | Get cart with all cart items | ✅ Implemented |
+| GET |  | `/cart/{userId}`                      | Get cart with all cart items               | ✅ Implemented |
+| POST   | `/cart/{user_id}/add`                 | Add a product to the user's cart           | ✅ Implemented |
+| PATCH  | `/cart/{user_id}/update`              | Update product quantity in the user's cart | ✅ Implemented |
+| DELETE | `/cart/{user_id}/remove/{product_id}` | Remove a product from the user's cart      | ✅ Implemented |
+
 
 
 ### Health Check
@@ -285,9 +289,9 @@ ecommerce/
 - [ ] Email verification
 
 ### Phase 3: Core E-commerce Features 📋 Planned
-- [ ] Shopping cart functionality
-  - [ ] Add/remove items
-  - [ ] Update quantities
+- [x] Shopping cart functionality
+  - [x] Add/remove items
+  - [x] Update quantities
   - [x] Cart persistence
 - [ ] Order management system
   - [ ] Create orders from cart
@@ -298,7 +302,7 @@ ecommerce/
   - [ ] Transaction handling
   - [ ] Invoice generation
 - [ ] Product features
-  - [ ] Categories management
+  - [x] Categories management
   - [ ] Product search and filtering
   - [ ] Inventory tracking
   - [ ] Product images handling
