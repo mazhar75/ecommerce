@@ -4,7 +4,7 @@
 A modern e-commerce backend built with Go, following Clean Architecture principles and Domain-Driven Design patterns for scalability and maintainability.
 
 ## 📌 Project Status
-🚧 **Active Development** — Core authentication and product management features are implemented with ongoing enhancements.
+🚧 **Active Development** — Core authentication ,product management features, shopping cart functionalities are implemented with ongoing enhancements.
 
 ## ✨ Current Features
 
@@ -18,10 +18,10 @@ A modern e-commerce backend built with Go, following Clean Architecture principl
 - **PostgreSQL Storage:** Database-backed repositories with migrations
 - **Clean Architecture:** Separation of concerns across layers
 - **Error Handling:** Custom AppError type with HTTP status mapping
+- **JWT AUTH:** JWT token integration in authentication flow, Protected route middleware
+- **Shopping Cart:** Shopping cart functionalities ( add,edit and delete from cart )
 
 ### In Progress 🚧
-- JWT token integration in authentication flow
-- Protected route middleware
 - Shopping cart functionality
 - Order management system
 
@@ -30,6 +30,8 @@ A modern e-commerce backend built with Go, following Clean Architecture principl
 - Product reviews and ratings
 - Input validation and sanitization
 - Unit and integration tests
+- Google Oauth2
+- Rate limiting using redis
 
 ## 🚀 Getting Started
 
@@ -55,6 +57,7 @@ CREATE DATABASE ecommerce;
 ```bash
 # Create tables
 psql -U postgres -d ecommerce -f migrations/001_init_schema.up.sql
+psql -U postgres -d ecommerce -f migrations/002_init_schema.up.sql
 
 # To rollback (if needed)
 psql -U postgres -d ecommerce -f migrations/001_init_schema.down.sql
@@ -71,9 +74,7 @@ DB_PORT=5432
 DB_NAME=ecommerce
 DB_USER=postgres
 DB_PASSWORD=your_password
-
-# Note: JWT secret is currently hardcoded in drivers/jwt.go
-# This should be moved to environment variables for production
+JWT_SECRET=your jwt secret
 ```
 
 ### Running the Application
@@ -89,7 +90,7 @@ The server will start on the configured port (default: 9090).
 | Method | Endpoint | Description | Status |
 |--------|----------|-------------|--------|
 | POST | `/auth/register` | Register new user with email/password | ✅ Implemented |
-| POST | `/auth/login` | Authenticate user and get token | ⚠️ Partial (no token return) |
+| POST | `/auth/login` | Authenticate user and get token | ✅ Implemented |
 
 ### Product Management Endpoints  
 | Method | Endpoint | Description | Status |
@@ -99,6 +100,17 @@ The server will start on the configured port (default: 9090).
 | POST | `/products` | Create new product | ✅ Implemented |
 | PUT | `/products/{productId}` | Update existing product | ✅ Implemented |
 | DELETE | `/products/{productId}` | Delete product | ✅ Implemented |
+
+### Category Management Endpoints  
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| POST | `/category` | Create new category | ✅ Implemented |
+
+### Shopping Cart Endpoints  
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| GET | `/cart/{userId}` | Get cart with all cart items | ✅ Implemented |
+
 
 ### Health Check
 | Method | Endpoint | Description | Status |
@@ -114,7 +126,9 @@ curl -X POST http://localhost:9090/auth/register \
   -d '{
     "name": "John Doe",
     "email": "john@example.com",
-    "password": "securepassword"
+    "password": "securepassword",
+    "is_varified":false,
+    "is_shop_owner":true
   }'
 ```
 
@@ -122,6 +136,7 @@ curl -X POST http://localhost:9090/auth/register \
 ```bash
 curl -X POST http://localhost:9090/auth/login \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <access_token>" \
   -d '{
     "email": "john@example.com",
     "password": "securepassword"
@@ -263,9 +278,9 @@ ecommerce/
 - [x] User login endpoint
 - [x] Custom JWT implementation
 - [x] Password hashing (SHA-256)
-- [ ] JWT token return in login response
-- [ ] Protected route middleware
-- [ ] Role-based access control (RBAC)
+- [x] JWT token return in login response
+- [x] Protected route middleware
+- [x] Role-based access control (RBAC)
 - [ ] Password reset functionality
 - [ ] Email verification
 
@@ -273,7 +288,7 @@ ecommerce/
 - [ ] Shopping cart functionality
   - [ ] Add/remove items
   - [ ] Update quantities
-  - [ ] Cart persistence
+  - [x] Cart persistence
 - [ ] Order management system
   - [ ] Create orders from cart
   - [ ] Order status tracking
@@ -325,10 +340,8 @@ ecommerce/
 - ✅ CORS middleware configured
 
 ### Security Improvements Needed
-- ⚠️ **JWT Secret:** Currently hardcoded, needs environment variable
 - ⚠️ **Password Hashing:** Using SHA-256, should upgrade to bcrypt
 - ⚠️ **CORS:** Currently allows all origins (`*`)
-- ⚠️ **Input Validation:** No comprehensive validation layer
 - ⚠️ **Rate Limiting:** Not implemented
 - ⚠️ **HTTPS:** No TLS/SSL configuration
 
@@ -384,6 +397,41 @@ CREATE TABLE product (
     img_url VARCHAR(255)
 );
 ```
+#### Cart Table
+
+```sql
+create TABLE cart(
+    cart_id SERIAL PRIMARY KEY,
+    user_id INT,
+    created_at timestamp DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+       ON DELETE CASCADE
+);
+```
+#### Cart_Items table
+```sql
+create table cart_item(
+    cart_item_id SERIAL PRIMARY KEY,
+    cart_id INT,
+    product_id INT,
+    quantity INT,
+    created_at timestamp DEFAULT NOW(),
+    FOREIGN KEY(cart_id) REFERENCES cart(cart_id)
+       ON DELETE CASCADE,
+    FOREIGN KEY(product_id) REFERENCES product(product_id)
+       ON DELETE CASCADE
+);
+```
+#### Indexes
+```sql
+create index users_mail on users(email);
+create index category_id on category(category_id);
+create index categoryId_productId on product(product_id,category_id);
+create index cart_user on cart(cart_id,user_id);
+create index cart_items on cart_item(cart_item_id,cart_id);
+```
+
+```
 
 ## 👥 Contributing
 
@@ -399,7 +447,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Follow Go best practices and conventions
 - Maintain Clean Architecture principles
 - Add appropriate error handling
-- Update documentation for new features
 - Consider adding tests for new functionality
 
 ## 📄 License
