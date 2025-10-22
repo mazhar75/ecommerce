@@ -15,7 +15,7 @@ func NewCartRepo(db *sql.DB) *CartRepo {
 	return &CartRepo{DB: db}
 }
 func (r *CartRepo) GetCartByUserId(user_id int) ([]cart.CartItems, error) {
-	query := `select *
+	query := ` select *
 	           from cart
 			   join cart_item
 			   on cart.cart_id=cart_item.cart_id
