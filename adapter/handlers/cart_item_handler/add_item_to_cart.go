@@ -9,7 +9,7 @@ import (
 
 // POST   /cart/{user_id}/add          → Add product to cart
 type addReqBody struct {
-	productId int `json:"product_id"`
+	ProductId int `json:"product_id"`
 }
 
 func (h *CartItemHandler) AddProductToCart(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func (h *CartItemHandler) AddProductToCart(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Internal server error", 500)
 		return
 	}
-	err = h.Service.AddProductToCart(user_id, product.productId)
+	err = h.Service.AddProductToCart(user_id, product.ProductId)
 	if err != nil {
 		http.Error(w, "Internal server error", 500)
 		return

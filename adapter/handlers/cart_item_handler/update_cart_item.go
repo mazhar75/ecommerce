@@ -8,8 +8,8 @@ import (
 )
 
 type updateReqBody struct {
-	productId int `json:"product_id"`
-	quantity  int `json"quantity"`
+	ProductId int `json:"product_id"`
+	Quantity  int `json:"quantity"`
 }
 
 // PATCH  /cart/{user_id}/update       → Change quantity
@@ -30,7 +30,7 @@ func (h *CartItemHandler) UpdateQuantity(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Internal server error", 500)
 		return
 	}
-	err = h.Service.ChangeQuantity(user_id, product.productId, product.quantity)
+	err = h.Service.ChangeQuantity(user_id, product.ProductId, product.Quantity)
 	if err != nil {
 		http.Error(w, "Internal server error", 500)
 		return
