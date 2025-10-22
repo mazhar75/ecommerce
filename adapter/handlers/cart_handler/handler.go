@@ -40,10 +40,3 @@ func (h *CartHandler) RegisterRoutes(mux *http.ServeMux, manager *middlewares.Ma
 			middlewares.AuthMiddleware,
 		))
 }
-
-/*
-GET    /cart/{user_id}              → Get a user’s cart
-POST   /cart/{user_id}/add          → Add product to cart
-PATCH  /cart/{user_id}/update       → Change quantity
-DELETE /cart/{user_id}/remove/:pid  → Remove product
-*/

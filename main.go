@@ -3,6 +3,7 @@ package main
 import (
 	"github/ecommerce/adapter/handlers/auth"
 	"github/ecommerce/adapter/handlers/cart_handler"
+	"github/ecommerce/adapter/handlers/cart_item_handler"
 	"github/ecommerce/adapter/handlers/category_handlers"
 	"github/ecommerce/adapter/handlers/health_handler"
 	"github/ecommerce/adapter/handlers/product_handlers"
@@ -47,6 +48,11 @@ func main() {
 	cartService := usecase.NewCartService(cartRepo)
 	cartHandler := cart_handler.NewCartHandler(cartService)
 
-	cmd.CreateServer(catHandler, productHandler, authHandler, healthHandler, cartHandler)
+	//cart items depedencies
+	cartItemRepo := postgresql.NewCartItemRepo(db)
+	cartItemService := usecase.NewCartItemService(cartItemRepo)
+	cartItemHandler := cart_item_handler.NewCartItemHandler(cartItemService)
+
+	cmd.CreateServer(catHandler, productHandler, authHandler, healthHandler, cartHandler, cartItemHandler)
 
 }
