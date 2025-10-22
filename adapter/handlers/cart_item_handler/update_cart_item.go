@@ -7,12 +7,13 @@ import (
 	"strings"
 )
 
-// POST   /cart/{user_id}/add          → Add product to cart
-type addReqBody struct {
+type updateReqBody struct {
 	productId int `json:"product_id"`
+	quantity  int `json"quantity"`
 }
 
-func (h *CartItemHandler) AddProductToCart(w http.ResponseWriter, r *http.Request) {
+// PATCH  /cart/{user_id}/update       → Change quantity
+func (h *CartItemHandler) UpdateQuantity(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 4 {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
@@ -23,13 +24,13 @@ func (h *CartItemHandler) AddProductToCart(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
-	var product addReqBody
+	var product updateReqBody
 	err = json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
 		http.Error(w, "Internal server error", 500)
 		return
 	}
-	err = h.Service.AddProductToCart(user_id, product.productId)
+	err = h.Service.ChangeQuantity(user_id, product.productId, product.quantity)
 	if err != nil {
 		http.Error(w, "Internal server error", 500)
 		return
