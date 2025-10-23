@@ -18,3 +18,6 @@ func (s *CartItemService) ChangeQuantity(user_id int, product_id int, quantity i
 func (s *CartItemService) DeleteProductFromCart(user_id int, product_id int) error {
 	return s.Repo.DeleteProductFromCart(user_id, product_id)
 }
+func (s *CartItemService) ToggleProductInCart(cart_item_id int) error {
+	return s.Repo.ToggleProductInCart(cart_item_id)
+}

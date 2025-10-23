@@ -20,4 +20,6 @@ type CartItemRepository interface {
 	AddProductToCart(user_id int, product_id int) error
 	ChangeQuantity(user_id int, product_id int, quantity int) error
 	DeleteProductFromCart(user_id int, product_id int) error
+	// select and unselect from checkout
+	ToggleProductInCart(cart_item_id int) error
 }

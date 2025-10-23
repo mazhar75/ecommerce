@@ -28,7 +28,6 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 		var cartId, cartItemId int
 		err = r.DB.QueryRow(query, user_id).Scan(&cartId)
 		if err != nil {
-			fmt.Println("Here error 1")
 			fmt.Println(err)
 			return err
 		}
@@ -37,7 +36,6 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 		query = `insert into cart_item(cart_id,product_id,quantity,is_selected) values($1,$2,$3,$4) returning cart_item_id`
 		err = r.DB.QueryRow(query, cartId, product_id, quantity, isSelected).Scan(&cartItemId)
 		if err != nil {
-			fmt.Println("Here error 2")
 			fmt.Println(err)
 			return err
 		}
@@ -45,14 +43,14 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 		return nil
 
 	} else if err != nil {
-		fmt.Println("Here error 3")
+
 		return err
 	} else {
 		query = `update cart_item set quantity=$1 where cart_item_id=$2`
 		quantity++
 		_, err = r.DB.Exec(query, quantity, cartItemId)
 		if err != nil {
-			fmt.Println("Here error 4")
+
 			fmt.Println(err)
 			return err
 		}
@@ -89,6 +87,22 @@ func (r *CartItemRepo) DeleteProductFromCart(user_id int, product_id int) error 
 	_, err = r.DB.Exec(query, cartId, product_id)
 	if err != nil {
 		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+func (r *CartItemRepo) ToggleProductInCart(cart_item_id int) error {
+	var isSelected bool
+	query := `select is_selected from cart_item where cart_item_id=$1`
+	err := r.DB.QueryRow(query, cart_item_id).Scan(&isSelected)
+	if err != nil {
+		fmt.Println("Error while checking previous selected version")
+		return err
+	}
+	query = `update cart_item set is_selected=$1 where cart_item_id=$2`
+	_, err = r.DB.Exec(query, !isSelected, cart_item_id)
+	if err != nil {
+		fmt.Println("Error while updating selection")
 		return err
 	}
 	return nil
