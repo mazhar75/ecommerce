@@ -29,4 +29,9 @@ func (h *CartItemHandler) RegisterRoutes(mux *http.ServeMux, manager *middleware
 			http.HandlerFunc(h.DeleteFromCart),
 			middlewares.AuthMiddleware,
 		))
+	mux.Handle("PATCH  /cart/{user_id}/toggle/{product_id}",
+		manager.With(
+			http.HandlerFunc(h.ToggleSelection),
+			middlewares.AuthMiddleware,
+		))
 }

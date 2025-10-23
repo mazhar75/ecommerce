@@ -16,7 +16,7 @@ func NewCartRepo(db *sql.DB) *CartRepo {
 	return &CartRepo{DB: db}
 }
 func (r *CartRepo) GetCartByUserId(user_id int) ([]cart.CartItems, error) {
-	query := ` select cart_item.cart_item_id, cart_item.cart_id, cart_item.product_id,cart_item.quantity
+	query := ` select cart_item.cart_item_id, cart_item.cart_id, cart_item.product_id,cart_item.quantity,cart_item.is_selected
 	           from cart
 			   join cart_item
 			   on cart.cart_id=cart_item.cart_id
@@ -32,7 +32,7 @@ func (r *CartRepo) GetCartByUserId(user_id int) ([]cart.CartItems, error) {
 
 	for rows.Next() {
 		var item cart.CartItems
-		err := rows.Scan(&item.CartItemsId, &item.CartId, &item.ProductId, &item.Quantity)
+		err := rows.Scan(&item.CartItemsId, &item.CartId, &item.ProductId, &item.Quantity, &item.IsSelected)
 		if err != nil {
 
 			fmt.Println(err)
