@@ -33,8 +33,9 @@ func (r *CartItemRepo) AddProductToCart(user_id int, product_id int) error {
 			return err
 		}
 		quantity := 1
-		query = `insert into cart_item(cart_id,product_id,quantity) values($1,$2,$3) returning cart_item_id`
-		err = r.DB.QueryRow(query, cartId, product_id, quantity).Scan(&cartItemId)
+		isSelected := false
+		query = `insert into cart_item(cart_id,product_id,quantity,is_selected) values($1,$2,$3,$4) returning cart_item_id`
+		err = r.DB.QueryRow(query, cartId, product_id, quantity, isSelected).Scan(&cartItemId)
 		if err != nil {
 			fmt.Println("Here error 2")
 			fmt.Println(err)

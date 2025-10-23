@@ -1,0 +1,1 @@
+ALTER TABLE cart_item ADD COLUMN is_selected BOOLEAN DEFAULT FALSE;
