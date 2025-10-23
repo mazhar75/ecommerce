@@ -275,7 +275,7 @@ ecommerce/
 - [x] Route registration interface
 - [x] PostgreSQL database integration
 - [x] Environment configuration
-- [x] Database migrations (initial schema)
+- [x] Database migrations 
 
 ### Phase 2: Authentication & Authorization 🚧 In Progress
 - [x] User registration with email/password
@@ -304,7 +304,7 @@ ecommerce/
 - [ ] Product features
   - [x] Categories management
   - [ ] Product search and filtering
-  - [ ] Inventory tracking
+  - [x] Inventory tracking
   - [ ] Product images handling
 - [ ] Reviews and ratings system
 
@@ -426,6 +426,19 @@ create table cart_item(
        ON DELETE CASCADE
 );
 ```
+#### Inventory table 
+```sql
+CREATE TABLE inventory (
+    inventory_id SERIAL PRIMARY KEY,
+    product_id INT,
+    category_id INT,
+    quantity INT NOT NULL DEFAULT 0,
+    reserved INT NOT NULL DEFAULT 0,
+    updated TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
+);
+```
 #### Indexes
 ```sql
 create index users_mail on users(email);
@@ -433,6 +446,7 @@ create index category_id on category(category_id);
 create index categoryId_productId on product(product_id,category_id);
 create index cart_user on cart(cart_id,user_id);
 create index cart_items on cart_item(cart_item_id,cart_id);
+create index inventory_query_product_id on inventory(product_id,quantity); 
 ```
 
 ```
