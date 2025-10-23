@@ -65,6 +65,7 @@ func (r *ProductRepo) GetAll() ([]product.Product, error) {
 }
 
 func (r *ProductRepo) InsertProduct(p product.Product) error {
+
 	query := `
 		INSERT INTO product (category_id, name, description, type, price, img_url)
 		VALUES ($1, $2, $3, $4, $5, $6)
@@ -75,7 +76,14 @@ func (r *ProductRepo) InsertProduct(p product.Product) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Inserted Product ID:", id)
+	query = `insert into inventory(product_id,category_id,quantity) values($1,$2,$3) returning inventory_id`
+	var inv_id int
+	err = r.DB.QueryRow(query, id, p.CategoryId, 10).Scan(&inv_id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("Inserted Product ID and inventory_id:", id, inv_id)
 	return nil
 }
 func (r *ProductRepo) DeleteProduct(pId int) error {
