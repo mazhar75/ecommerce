@@ -4,8 +4,6 @@ package cmd
 import (
 	"fmt"
 	"github/ecommerce/adapter/routes"
-
-	"github/ecommerce/infra/postgresql"
 	"github/ecommerce/middlewares"
 	"log"
 	"net/http"
@@ -13,10 +11,6 @@ import (
 )
 
 func CreateServer(handlers ...routes.RouteRegister) {
-
-	conn := postgresql.GetDB()
-
-	defer conn.Close()
 
 	fmt.Println("Server starting...at 9090")
 	mux := http.NewServeMux()

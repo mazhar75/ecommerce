@@ -17,6 +17,7 @@ import (
 func main() {
 
 	db := postgresql.GetDB()
+	defer db.Close()
 
 	//auth dependencies
 	authRepo := postgresql.NewUserRepo(db)
