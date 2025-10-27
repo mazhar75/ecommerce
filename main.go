@@ -5,18 +5,26 @@ import (
 	"github/ecommerce/adapter/handlers/cart_handler"
 	"github/ecommerce/adapter/handlers/cart_item_handler"
 	"github/ecommerce/adapter/handlers/category_handlers"
+	"github/ecommerce/adapter/handlers/checkout_handler"
 	"github/ecommerce/adapter/handlers/health_handler"
 	"github/ecommerce/adapter/handlers/product_handlers"
 	"github/ecommerce/cmd"
 	"github/ecommerce/domain/health"
 	"github/ecommerce/infra/memory"
 	"github/ecommerce/infra/postgresql"
+	"github/ecommerce/infra/redis"
 	"github/ecommerce/usecase"
 )
 
 func main() {
 
+	//db connection
 	db := postgresql.GetDB()
+	defer db.Close()
+
+	//redis connection
+	redisdb := redis.NewRedisServer()
+	defer redisdb.Close()
 
 	//auth dependencies
 	authRepo := postgresql.NewUserRepo(db)
@@ -48,11 +56,17 @@ func main() {
 	cartService := usecase.NewCartService(cartRepo)
 	cartHandler := cart_handler.NewCartHandler(cartService)
 
-	//cart items depedencies
+	//cart items dependencies
 	cartItemRepo := postgresql.NewCartItemRepo(db)
 	cartItemService := usecase.NewCartItemService(cartItemRepo)
 	cartItemHandler := cart_item_handler.NewCartItemHandler(cartItemService)
 
-	cmd.CreateServer(catHandler, productHandler, authHandler, healthHandler, cartHandler, cartItemHandler)
+	//checkout dependencies
+	checkoutPgRepo := postgresql.NewCheckoutRepo(db)
+	checkoutRedisRepo := redis.NewCheckoutRepo(redisdb)
+	checkoutService := usecase.NewCheckoutService(checkoutPgRepo, checkoutRedisRepo)
+	checkoutHandler := checkout_handler.NewCheckoutHandler(checkoutService)
+
+	cmd.CreateServer(catHandler, productHandler, authHandler, healthHandler, cartHandler, cartItemHandler, checkoutHandler)
 
 }

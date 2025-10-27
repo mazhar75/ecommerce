@@ -6,24 +6,35 @@ import (
 	"strconv"
 )
 
-type Config struct {
-	Service   string
-	Version   string
-	HttpPORT  int
-	DbHost    string
-	DbPort    string
-	DbName    string
-	DbUser    string
-	DbPass    string
+type ServerConfig struct {
+	service  string
+	version  string
+	httpPORT int
+}
+type PostgresqlConfig struct {
+	dbHost string
+	dbPort string
+	dbName string
+	dbUser string
+	dbPass string
+}
+type JWTConfig struct {
 	jwtSecret string
 }
+type RedisConfig struct {
+	redisIP   string
+	redisPort int
+	redisPass string
+	redisDb   int
+}
 
-var config *Config
+var serverConfig *ServerConfig
+var postgresqlConfig *PostgresqlConfig
+var jwtConfig *JWTConfig
+var redisConfig *RedisConfig
 
-func NewConfig() Config {
-	if config != nil {
-		return *config
-	}
+func NewConfig() {
+
 	loadENV()
 	version := os.Getenv("VERSION")
 	if version == "" {
@@ -38,7 +49,7 @@ func NewConfig() Config {
 	httpPort := os.Getenv("PORT")
 	port, err := strconv.Atoi(httpPort)
 	if err != nil {
-		fmt.Println("Give a valid port")
+		fmt.Println("Give a valid server port")
 		os.Exit(1)
 	}
 	dbHost := os.Getenv("DB_HOST")
@@ -51,27 +62,63 @@ func NewConfig() Config {
 		os.Exit(1)
 	}
 	jwtSecrets := os.Getenv("JWT_SECRET")
-	config = &Config{
-		Service:   service,
-		Version:   version,
-		HttpPORT:  port,
-		DbHost:    dbHost,
-		DbPort:    dbPort,
-		DbName:    dbName,
-		DbUser:    dbUser,
-		DbPass:    dbPass,
+	redisIP := os.Getenv("REDIS_IP")
+	redis_port := os.Getenv("REDIS_PORT")
+	redisPass := os.Getenv("REDIS_PASSWORD")
+	redis_db := os.Getenv("REDIS_DB")
+
+	redisPort, err := strconv.Atoi(redis_port)
+	if err != nil {
+		fmt.Println("Give a valid redis port")
+		os.Exit(1)
+	}
+	redisDb, err := strconv.Atoi(redis_db)
+	if err != nil {
+		fmt.Println("Give a valid redis db")
+		os.Exit(1)
+	}
+
+	serverConfig = &ServerConfig{
+		service:  service,
+		version:  version,
+		httpPORT: port,
+	}
+	postgresqlConfig = &PostgresqlConfig{
+		dbHost: dbHost,
+		dbPort: dbPort,
+		dbName: dbName,
+		dbUser: dbUser,
+		dbPass: dbPass,
+	}
+	jwtConfig = &JWTConfig{
 		jwtSecret: jwtSecrets,
 	}
-	return *config
+	redisConfig = &RedisConfig{
+		redisIP:   redisIP,
+		redisPort: redisPort,
+		redisPass: redisPass,
+		redisDb:   redisDb,
+	}
 
 }
 func DbString() *string {
-	cnf := NewConfig()
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cnf.DbUser, cnf.DbPass, cnf.DbHost, cnf.DbPort, cnf.DbName)
+	if postgresqlConfig == nil {
+		NewConfig()
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", postgresqlConfig.dbUser, postgresqlConfig.dbPass, postgresqlConfig.dbHost, postgresqlConfig.dbPort, postgresqlConfig.dbName)
 	return &dsn
 
 }
 func Get_JWT_SECRET() *string {
-	cnf := NewConfig()
-	return &cnf.jwtSecret
+	if jwtConfig == nil {
+		NewConfig()
+	}
+	return &jwtConfig.jwtSecret
+}
+func Get_Redis_Config() (string, string, int) {
+	if redisConfig == nil {
+		NewConfig()
+	}
+	addr := redisConfig.redisIP + ":" + strconv.Itoa(redisConfig.redisPort)
+	return addr, redisConfig.redisPass, redisConfig.redisDb
 }

@@ -75,6 +75,11 @@ DB_NAME=ecommerce
 DB_USER=postgres
 DB_PASSWORD=your_password
 JWT_SECRET=your jwt secret
+//default
+REDIS_IP=localhost
+REDIS_PORT=6380
+REDIS_PASSWORD=""
+REDIS_DB=0
 ```
 
 ### Running the Application
@@ -116,6 +121,10 @@ The server will start on the configured port (default: 9090).
 | DELETE | `/cart/{user_id}/remove/{product_id}` | Remove a product from the user's cart        | ✅ Implemented |
 
 
+### Checkout 
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| POST | `/checkout` | Create checkout from cart with selected items | ✅ Implemented with redis|
 
 ### Health Check
 | Method | Endpoint | Description | Status |
@@ -295,18 +304,18 @@ ecommerce/
   - [x] Update quantities
   - [x] Cart persistence
 - [ ] Order management system
-  - [ ] Create orders from cart
+  - [x] Create orders from cart
   - [ ] Order status tracking
   - [ ] Order history
 - [ ] Payment integration
   - [ ] Payment gateway integration
   - [ ] Transaction handling
-  - [ ] Invoice generation
+  - [x] Invoice generation
 - [ ] Product features
   - [x] Categories management
   - [ ] Product search and filtering
   - [x] Inventory tracking
-  - [ ] Product images handling
+  - [x] Product images handling
 - [ ] Reviews and ratings system
 
 ### Phase 4: Quality & Testing 📋 Planned
