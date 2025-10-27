@@ -11,12 +11,13 @@ import (
 var (
 	rdb  *redis.Client
 	once sync.Once
+	ctx  context.Context
 )
 
 // NewRedisServer initializes and returns a Redis client
 func NewRedisServer() *redis.Client {
 	once.Do(func() {
-		ctx := context.Background()
+		ctx = context.Background()
 
 		// Initialize Redis client
 		rdb = redis.NewClient(&redis.Options{

@@ -16,10 +16,9 @@ func (s *CheckoutService) AddCheckoutfromPgtoRedis(cart_id int) ([]checkout.OutO
 	if err != nil {
 		return out_stock, err
 	}
-	err = s.RedisRepo.InsertAllProductsIntoRedis(p)
+	err = s.RedisRepo.InsertAllProductsIntoRedis(p, cart_id)
 	if err != nil {
 		return out_stock, err
 	}
 	return out_stock, nil
-
 }

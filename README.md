@@ -109,10 +109,11 @@ The server will start on the configured port (default: 9090).
 ### Shopping Cart Endpoints  
 | Method | Endpoint | Description | Status |
 |--------|----------|-------------|--------|
-| GET |  | `/cart/{userId}`                      | Get cart with all cart items               | ✅ Implemented |
-| POST   | `/cart/{user_id}/add`                 | Add a product to the user's cart           | ✅ Implemented |
-| PATCH  | `/cart/{user_id}/update`              | Update product quantity in the user's cart | ✅ Implemented |
-| DELETE | `/cart/{user_id}/remove/{product_id}` | Remove a product from the user's cart      | ✅ Implemented |
+| GET |  | `/cart/{userId}`                      | Get cart with all cart items                 | ✅ Implemented |
+| POST   | `/cart/{user_id}/add`                 | Add a product to the user's cart             | ✅ Implemented |
+| PATCH  | `/cart/{user_id}/update`              | Update product quantity in the user's cart   | ✅ Implemented |
+| PATCH  | `/cart/{user_id}/toggle/{product_id}` | Update product selections in the user's cart | ✅ Implemented |
+| DELETE | `/cart/{user_id}/remove/{product_id}` | Remove a product from the user's cart        | ✅ Implemented |
 
 
 
@@ -277,7 +278,7 @@ ecommerce/
 - [x] Environment configuration
 - [x] Database migrations 
 
-### Phase 2: Authentication & Authorization 🚧 In Progress
+### Phase 2: Authentication & Authorization (90% Done)
 - [x] User registration with email/password
 - [x] User login endpoint
 - [x] Custom JWT implementation
@@ -288,7 +289,7 @@ ecommerce/
 - [ ] Password reset functionality
 - [ ] Email verification
 
-### Phase 3: Core E-commerce Features 📋 Planned
+### Phase 3: Core E-commerce Features 🚧 In Progress
 - [x] Shopping cart functionality
   - [x] Add/remove items
   - [x] Update quantities
