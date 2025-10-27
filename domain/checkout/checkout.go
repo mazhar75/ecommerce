@@ -24,5 +24,6 @@ type CheckoutPgRepository interface {
 	GetAllProductsFromCart(cart_id int) ([]Checkout, []OutOfStock, error)
 }
 type CheckoutRedisRepository interface {
-	InsertAllProductsIntoRedis(products []Checkout, cart_id int) error
+	CheckRedisExistance(cart_id int) (bool, CheckoutFinal, error)
+	InsertAllProductsIntoRedis(products []Checkout, cart_id int) (CheckoutFinal, error)
 }

@@ -17,20 +17,29 @@ func (h *CheckoutHandler) CreateCheckout(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
-	outOfStock, err := h.Service.AddCheckoutfromPgtoRedis(reqbody.CartId)
+	finalCheckOut, outOfStock, err := h.Service.AddCheckoutfromPgtoRedis(reqbody.CartId)
 	if err != nil {
-		if err != nil {
-			http.Error(w, "Internal server error", 500)
-			return
-		}
+
+		http.Error(w, "Internal server error", 500)
+		return
+
 	}
 	w.WriteHeader(http.StatusCreated)
-	data, err := json.Marshal(outOfStock)
+	data1, err := json.Marshal(finalCheckOut)
 	if err != nil {
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
 		return
 	}
+	data2, err := json.Marshal(outOfStock)
+	if err != nil {
+		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	w.Write([]byte("Checkout products "))
+	w.Write(data1)
+	w.Write([]byte("OutOfStock products "))
+	w.Write(data2)
 
 }

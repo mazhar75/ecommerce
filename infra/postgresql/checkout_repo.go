@@ -87,6 +87,7 @@ func (r *CheckoutRepo) GetAllProductsFromCart(cart_id int) ([]checkout.Checkout,
 	}
 
 	// Perform batch update on inventory table
+
 	if len(updateInventoryTable) > 0 {
 		tx, err := r.DB.Begin()
 		if err != nil {
@@ -103,10 +104,10 @@ func (r *CheckoutRepo) GetAllProductsFromCart(cart_id int) ([]checkout.Checkout,
 		}
 
 		query := fmt.Sprintf(`
-			UPDATE inventory
-			SET quantity = data.quantity, reserved = data.reserved, updated = NOW()
-			FROM (VALUES %s) AS data(product_id, quantity, reserved)
-			WHERE inventory.product_id = data.product_id`,
+         UPDATE inventory
+         SET quantity = data.quantity::INTEGER, reserved = data.reserved::INTEGER, updated = NOW()
+         FROM (VALUES %s) AS data(product_id, quantity, reserved)
+         WHERE inventory.product_id = data.product_id::INTEGER`,
 			strings.Join(valueStrings, ","))
 
 		// Execute the batch update
