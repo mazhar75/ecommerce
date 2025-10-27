@@ -120,6 +120,7 @@ The server will start on the configured port (default: 9090).
 | PATCH  | `/cart/{user_id}/toggle/{product_id}` | Update product selections in the user's cart | ✅ Implemented |
 | DELETE | `/cart/{user_id}/remove/{product_id}` | Remove a product from the user's cart        | ✅ Implemented |
 
+
 ### Checkout 
 | Method | Endpoint | Description | Status |
 |--------|----------|-------------|--------|
