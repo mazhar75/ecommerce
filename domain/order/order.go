@@ -18,5 +18,5 @@ type OrderRepository interface {
 	UpdateStatus(order_id int, status string) (Orders, error)
 }
 type OrderItemsRepository interface {
-	AddItems(order_id int, product_id int, quantity int, price int) error
+	AddItems(orderID int, productIDs []int, quantities []int, prices []float64) error
 }
