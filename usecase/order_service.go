@@ -21,7 +21,7 @@ func (s *OrderService) OrderPlacement(user_id int, cart_id int) (order.Orders, e
 		return order.Orders{}, err
 	}
 	if !isExist {
-		return order.Orders{}, errors.New("Please select items from cart and click checkout")
+		return order.Orders{}, errors.New("please select items from cart and click checkout")
 	}
 
 	ord, err := s.OrderRepo.AddOrder(user_id, p.TotalPrice, "pending")
@@ -42,4 +42,7 @@ func (s *OrderService) OrderPlacement(user_id int, cart_id int) (order.Orders, e
 	}
 	return ord, nil
 
+}
+func (s *OrderService) UpdateOrderStatus(order_id int, status string) (order.Orders, error) {
+	return s.OrderRepo.UpdateStatus(order_id, status)
 }
