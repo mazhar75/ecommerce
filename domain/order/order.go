@@ -15,7 +15,7 @@ type OrderItems struct {
 }
 type OrderRepository interface {
 	AddOrder(user_id int, total float64, status string) (Orders, error)
-	UpdateStatus(order_id int) (Orders, error)
+	UpdateStatus(order_id int, status string) (Orders, error)
 }
 type OrderItemsRepository interface {
 	AddItems(order_id int, product_id int, quantity int, price int) error
