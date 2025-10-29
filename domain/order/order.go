@@ -14,7 +14,6 @@ type OrderItems struct {
 	Price       float64 `json:"price"`
 }
 type OrderRepository interface {
-	CheckExistanceOfCheckout(cart_id int) (bool, Orders, []OrderItems, error)
 	AddOrder(user_id int, total float64, status string) (Orders, error)
 	UpdateStatus(order_id int) (Orders, error)
 }
