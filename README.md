@@ -126,6 +126,12 @@ The server will start on the configured port (default: 9090).
 |--------|----------|-------------|--------|
 | POST | `/checkout` | Create checkout from cart with selected items | ✅ Implemented with redis|
 
+### Order 
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| POST | `/order/place` | Place the order | ✅ Implemented|
+| POST | `/order/changestatus` | Change order status pending to accept to deliver | ✅ Implemented|
+
 ### Health Check
 | Method | Endpoint | Description | Status |
 |--------|----------|-------------|--------|
@@ -305,7 +311,7 @@ ecommerce/
   - [x] Cart persistence
 - [ ] Order management system
   - [x] Create orders from cart
-  - [ ] Order status tracking
+  - [x] Order status tracking
   - [ ] Order history
 - [ ] Payment integration
   - [ ] Payment gateway integration

@@ -13,3 +13,10 @@ type OrderItems struct {
 	Quantity    int     `json:"quantity"`
 	Price       float64 `json:"price"`
 }
+type OrderRepository interface {
+	AddOrder(user_id int, total float64, status string) (Orders, error)
+	UpdateStatus(order_id int, status string) (Orders, error)
+}
+type OrderItemsRepository interface {
+	AddItems(orderID int, productIDs []int, quantities []int, prices []float64) error
+}
